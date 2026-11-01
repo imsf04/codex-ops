@@ -45,7 +45,8 @@ def _configuration():
 
 
 def _status_path(shim_pid):
-    status_root = Path(os.environ.get('CODEX_OPS_BRIDGE_STATUS', str(Path(os.environ['LOCALAPPDATA']) / 'CodexOps/bridge')))
+    default_root = Path(os.environ.get('LOCALAPPDATA', Path.home())) / 'CodexOps/bridge'
+    status_root = Path(os.environ.get('CODEX_OPS_BRIDGE_STATUS', str(default_root)))
     status_root.mkdir(parents=True, exist_ok=True)
     return status_root / f'{shim_pid}.json'
 
@@ -69,7 +70,8 @@ def _host_address(native):
 @contextmanager
 def _native_process(path):
     native = subprocess.Popen([str(path), '--listen', 'grpc://127.0.0.1:0'],
-                              stdout=subprocess.PIPE, stderr=sys.stderr, creationflags=subprocess.CREATE_NO_WINDOW)
+                              stdout=subprocess.PIPE, stderr=sys.stderr,
+                              creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
     try:
         yield native, _host_address(native)
     finally:

@@ -67,6 +67,12 @@ jobs:
         run: uv run --locked --no-dev python -m unittest discover -s tests -p test_portable_native.py
       - name: Exercise MCP stdio server
         run: uv run --locked --no-dev python -m unittest discover -s tests -p test_portable_startup.py
+      - name: Check process ancestry and runtime status
+        run: uv run --locked --no-dev python -m unittest discover -s tests -p test_runtime_status.py
+      - name: Check runtime discovery
+        run: uv run --locked --no-dev python -m unittest discover -s tests -p test_v061_runtime_discovery.py
+      - name: Check hook behavior
+        run: uv run --locked --no-dev python -m unittest discover -s tests -p test_hook_architecture.py
       - name: Check read-only snapshot safety
         run: uv run --locked --no-dev python -m unittest discover -s tests -p test_cache_reader.py
       - name: Check bundle assembly

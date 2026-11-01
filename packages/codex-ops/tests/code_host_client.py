@@ -1,5 +1,6 @@
 """Owned local code-mode-host process; framed IPC evidence, not a Codex chat."""
 import json
+import os
 from pathlib import Path
 import queue
 import shutil
@@ -11,13 +12,13 @@ from native_cli import native_cli
 
 class Host:
     def __init__(self, bridge=False, env=None):
-        self.exe = Path(native_cli()).with_name('codex-code-mode-host.exe')
+        self.exe = Path(native_cli()).with_name('codex-code-mode-host' + ('.exe' if os.name == 'nt' else ''))
         command = [str(self.exe)]
         if bridge:
             import sys
             command = [sys.executable, str(Path(__file__).resolve().parents[1] / 'experimental/code_mode_bridge.py'), '--upstream', str(self.exe)]
         self.process = subprocess.Popen(command, env=env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
+                                        stderr=subprocess.PIPE, creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
         self.messages = queue.Queue()
         self.stderr = []
         self.frames = []

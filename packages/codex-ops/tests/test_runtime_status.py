@@ -56,6 +56,11 @@ class RuntimeStatusTests(unittest.TestCase):
             with patch.object(runtime_status, 'ancestors', return_value=[789]):
                 self.assertFalse(runtime_status.current()['activeForThisProcess'])
 
+    def test_actual_process_ancestry_includes_parent(self):
+        ancestry = runtime_status.ancestors()
+        self.assertEqual(ancestry[0], os.getpid())
+        self.assertIn(os.getppid(), ancestry)
+
     def test_nested_appserver_uses_nearest_shim_not_latest_ancestor_heartbeat(self):
         self.value.update(shimPid=123, pid=100, runtimeVersion='0.6.0')
         self.write()
