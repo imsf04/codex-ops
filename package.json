@@ -2,6 +2,7 @@
   "name": "codex-ops",
   "version": "0.8.0",
   "private": true,
+  "author": "imsf04",
   "description": "Repository checks for the Codex Ops Python and Rust plugin",
   "repository": {
     "type": "git",

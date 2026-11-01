@@ -2,6 +2,8 @@
 
 **English** · [中文](README.md)
 
+The sole maintainer of the current Codex Ops project is [imsf04](https://github.com/imsf04).
+
 A Codex MCP plugin for compact evidence, recoverable large outputs, file and document tools,
 and staged file tasks. It combines a Python service, a native Rust worker, a dedicated Rust
 kernel, and an optional output bridge.

@@ -7,6 +7,9 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+- Identify imsf04 as the current project's sole maintainer and plugin author; preserve upstream copyright and historical commit attribution.
+- 将 imsf04 标明为当前项目的唯一维护者和插件作者；保留上游版权及历史提交署名。
+
 - Include uv's original MIT and Apache-2.0 license texts in portable artifacts.
 - 便携产物附带 uv 原始 MIT 与 Apache-2.0 许可证文本。
 
