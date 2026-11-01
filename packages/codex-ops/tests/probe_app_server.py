@@ -24,6 +24,7 @@ import tomllib
 import grpc
 from native_cli import native_cli, mcp_python
 from coverage_entry import instrument
+from bridge_probe_status import wait_for_status
 
 
 def free_port():
@@ -333,14 +334,8 @@ shell_snapshot = false
         if args.shim:
             if args.coverage:
                 time.sleep(0.3)  # Flush a coverage snapshot before Windows Job teardown.
-            deadline = time.monotonic() + 4
-            while time.monotonic() < deadline:
-                statuses = list(status_root.glob(f'{process.pid}.json'))
-                if statuses:
-                    bridge_status = json.loads(statuses[0].read_text())
-                    if bridge_status['counters']['outboundFrames'] >= 4:
-                        break
-                time.sleep(0.1)
+            bridge_status = wait_for_status(status_root / f'{process.pid}.json',
+                                           projected=args.compress and args.case in ('text', 'yield', 'mcp'))
             assert bridge_status and bridge_status['compressionEnabled'] != args.allow_unvalidated_shim, bridge_status
             (root / 'shim-bridge-status.json').write_text(json.dumps(bridge_status, indent=2), encoding='utf-8')
     finally:
