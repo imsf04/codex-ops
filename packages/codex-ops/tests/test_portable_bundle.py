@@ -38,6 +38,10 @@ while not pathlib.Path(sys.argv[2]).exists():
             root = Path(directory)
             source = root / 'source'
             source.mkdir()
+            for name in ('LICENSE', 'NOTICE'):
+                (root / name).write_text('original attribution ' + name, encoding='utf-8')
+            (root / 'licenses').mkdir()
+            (root / 'licenses/native.txt').write_text('native license', encoding='utf-8')
             for name in ('.codex-plugin', 'hooks', 'skills', 'mutations', 'runtime_bridge', 'experimental', 'docs', 'bin'):
                 (source / name).mkdir()
             for name in ('server.py', 'hook.py', 'portable_install.py', 'pyproject.toml', 'uv.lock',
@@ -55,8 +59,11 @@ while not pathlib.Path(sys.argv[2]).exists():
                 (source / 'bin/codex-ops-cli.exe').write_bytes(b'fixture')
             uv = root / 'uv'
             uv.write_bytes(b'fixture')
-            with patch.object(build_portable, 'SOURCE', source):
+            with patch.object(build_portable, 'SOURCE', source), patch.object(build_portable, 'REPOSITORY', root):
                 bundle = build_portable.build(root / 'extract here', uv)
+            self.assertEqual((bundle / 'NOTICE').read_text(), 'original attribution NOTICE')
+            self.assertEqual((bundle / 'LICENSE').read_text(), 'original attribution LICENSE')
+            self.assertEqual((bundle / 'licenses/native.txt').read_text(), 'native license')
             plugin = bundle / 'plugin'
             initial_hooks = json.loads((plugin / 'hooks/hooks.json').read_text())
             initial_command = initial_hooks['hooks']['SessionStart'][0]['hooks'][0]['command']

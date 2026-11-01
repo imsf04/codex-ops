@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 
 SOURCE = Path(__file__).resolve().parents[1]
+REPOSITORY = SOURCE.parents[1]
 
 
 def build(destination, uv):
@@ -14,6 +15,9 @@ def build(destination, uv):
         raise ValueError('Bundle destination already exists')
     plugin = destination / 'plugin'
     plugin.mkdir(parents=True)
+    for name in ('LICENSE', 'NOTICE'):
+        shutil.copy2(REPOSITORY / name, destination / name)
+    shutil.copytree(REPOSITORY / 'licenses', destination / 'licenses')
     for path in SOURCE.glob('*.py'):
         shutil.copy2(path, plugin / path.name)
     for name in ('.codex-plugin', 'hooks', 'skills', 'mutations', 'runtime_bridge', 'experimental', 'docs'):

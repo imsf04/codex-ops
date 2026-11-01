@@ -7,6 +7,9 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+- Make Codex Ops the standalone repository product; retain native dependencies, licenses and Git history, replace the DSH entry docs and CI.
+- 仓库独立为 Codex Ops；保留必要原生依赖、许可证和 Git 历史，更新 DSH 遗留入口文档及 CI。
+
 - Bypass HTTP proxies for the relay's loopback connection to its native host.
 - 桥接转发器连接本机原生宿主时绕过 HTTP 代理。
 - Add an opt-in POSIX launcher that owns the relay and app-server lifetimes and falls back to native output.
