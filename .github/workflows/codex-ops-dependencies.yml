@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: codex-ops-portable-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   dependencies:
     name: Codex Ops dependencies (${{ matrix.os }})
@@ -36,6 +40,14 @@ jobs:
       - name: Install Rust
         shell: bash
         run: rustup toolchain install 1.97.1 --profile minimal && rustup default 1.97.1
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            native/target
+            packages/codex-ops/rust-kernel/target
+          key: codex-ops-portable-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('native/Cargo.lock', 'packages/codex-ops/rust-kernel/Cargo.lock') }}
       - name: Build and test native components
         shell: bash
         run: |
