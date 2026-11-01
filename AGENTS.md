@@ -96,3 +96,17 @@ node scripts/verify-gate.mjs --skip-install              # the full release gate
   identity/CA bundle.
 - A local `tar` may fail to unpack the packed tarball on non-ASCII doc filenames; CI is the reference
   for that gate step.
+
+## Agent skills
+
+### Issue tracker
+
+Track issues in GitHub Issues for `imsf04/codex-ops`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Use the default triage labels. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Use the single-context domain layout. See `docs/agents/domain.md`.

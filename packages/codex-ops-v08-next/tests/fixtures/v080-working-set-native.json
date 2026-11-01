@@ -1,0 +1,327 @@
+{
+  "provenance": "Retained pilot02 controlled fixture native item/completed; workspace path sanitized only.",
+  "rows": [
+    {
+      "eventLine": 38,
+      "eventSha256": "37e19e475f1777885b9522097de560af12cc2cf0f32b197e1e060324ac4caa53",
+      "value": {
+        "kind": "evidence-packet",
+        "schemaVersion": 1,
+        "status": "completed",
+        "operation": "working_set",
+        "effectState": "none",
+        "action": "resume",
+        "evidenceState": "collected",
+        "coverage": {
+          "sourceScanComplete": true,
+          "selectionComplete": true
+        },
+        "title": "Identify the worker setting integer, its implementation and its regression test, with relative paths.",
+        "items": [
+          {
+            "ref": "ops://d94d7ebe147699669d180d89c39d2372a260087a60909190",
+            "label": "Acquired source evidence",
+            "path": "C:/fixture\\.\\checks\\test_workers.py",
+            "revision": "1c284d7b9da59ea370e384d87fa90599da9ac0ba44032ff0d2e83400f6621176",
+            "state": "current",
+            "currentRevision": "1c284d7b9da59ea370e384d87fa90599da9ac0ba44032ff0d2e83400f6621176",
+            "observationDigest": "c20baa5ce58b9f24f6e9c999e77776be5cad3325d7afebea4a9881fb0791d347",
+            "kind": "working-source",
+            "source": {
+              "ref": "ops://d94d7ebe147699669d180d89c39d2372a260087a60909190",
+              "label": "Acquired source evidence",
+              "path": "C:/fixture\\.\\checks\\test_workers.py",
+              "revision": "1c284d7b9da59ea370e384d87fa90599da9ac0ba44032ff0d2e83400f6621176",
+              "observationDigest": "c20baa5ce58b9f24f6e9c999e77776be5cad3325d7afebea4a9881fb0791d347"
+            },
+            "result": {
+              "kind": "source-evidence",
+              "items": [
+                {
+                  "kind": "source-line",
+                  "text": "    assert active_limit({\"workers\":7}) == 7",
+                  "source": {
+                    "path": "C:/fixture\\.\\checks\\test_workers.py",
+                    "revision": "1c284d7b9da59ea370e384d87fa90599da9ac0ba44032ff0d2e83400f6621176"
+                  },
+                  "location": {
+                    "line": 3
+                  }
+                },
+                {
+                  "kind": "source-line",
+                  "text": "from runtime import active_limit",
+                  "source": {
+                    "path": "C:/fixture\\.\\checks\\test_workers.py",
+                    "revision": "1c284d7b9da59ea370e384d87fa90599da9ac0ba44032ff0d2e83400f6621176"
+                  },
+                  "location": {
+                    "line": 1
+                  }
+                },
+                {
+                  "kind": "source-line",
+                  "text": "def test_configurable():",
+                  "source": {
+                    "path": "C:/fixture\\.\\checks\\test_workers.py",
+                    "revision": "1c284d7b9da59ea370e384d87fa90599da9ac0ba44032ff0d2e83400f6621176"
+                  },
+                  "location": {
+                    "line": 2
+                  }
+                }
+              ],
+              "coverage": "Selected lines for this file only; not the entire file or task."
+            },
+            "contentOmitted": false
+          },
+          {
+            "ref": "ops://70dd27656a164b35a9be58d4437fab83ff16148c7ae978c9",
+            "label": "Acquired source evidence",
+            "path": "C:/fixture\\.\\runtime.py",
+            "revision": "35e712f7611d1712f0862f5728a04b962bb0f5be845067d28a7047289b035b02",
+            "state": "current",
+            "currentRevision": "35e712f7611d1712f0862f5728a04b962bb0f5be845067d28a7047289b035b02",
+            "observationDigest": "15066009bfdc910fcd54c56d74554c2c2318617f642aacc99f3ca62f3f5ec412",
+            "kind": "working-source",
+            "source": {
+              "ref": "ops://70dd27656a164b35a9be58d4437fab83ff16148c7ae978c9",
+              "label": "Acquired source evidence",
+              "path": "C:/fixture\\.\\runtime.py",
+              "revision": "35e712f7611d1712f0862f5728a04b962bb0f5be845067d28a7047289b035b02",
+              "observationDigest": "15066009bfdc910fcd54c56d74554c2c2318617f642aacc99f3ca62f3f5ec412"
+            },
+            "result": {
+              "kind": "source-evidence",
+              "items": [
+                {
+                  "kind": "source-line",
+                  "text": "def active_limit(settings):",
+                  "source": {
+                    "path": "C:/fixture\\.\\runtime.py",
+                    "revision": "35e712f7611d1712f0862f5728a04b962bb0f5be845067d28a7047289b035b02"
+                  },
+                  "location": {
+                    "line": 1
+                  }
+                },
+                {
+                  "kind": "source-line",
+                  "text": "    return settings[\"workers\"]",
+                  "source": {
+                    "path": "C:/fixture\\.\\runtime.py",
+                    "revision": "35e712f7611d1712f0862f5728a04b962bb0f5be845067d28a7047289b035b02"
+                  },
+                  "location": {
+                    "line": 2
+                  }
+                }
+              ],
+              "coverage": "Selected lines for this file only; not the entire file or task."
+            },
+            "contentOmitted": false
+          },
+          {
+            "ref": "ops://cf6a52f3f2d8b57531535c97df1fc3cbba733f2dbac3c9e2",
+            "label": "Acquired source evidence",
+            "path": "C:/fixture\\.\\settings.json",
+            "revision": "db6fb2c3afc724d9f5b5f50225246a65053338346360536b9b25c42dd75abc70",
+            "state": "current",
+            "currentRevision": "db6fb2c3afc724d9f5b5f50225246a65053338346360536b9b25c42dd75abc70",
+            "observationDigest": "16cc969fba4f8ed0e50cfcdf5edd27f099584f803b23210f27d1055fa4ba2e86",
+            "kind": "working-source",
+            "source": {
+              "ref": "ops://cf6a52f3f2d8b57531535c97df1fc3cbba733f2dbac3c9e2",
+              "label": "Acquired source evidence",
+              "path": "C:/fixture\\.\\settings.json",
+              "revision": "db6fb2c3afc724d9f5b5f50225246a65053338346360536b9b25c42dd75abc70",
+              "observationDigest": "16cc969fba4f8ed0e50cfcdf5edd27f099584f803b23210f27d1055fa4ba2e86"
+            },
+            "result": {
+              "kind": "source-evidence",
+              "items": [
+                {
+                  "kind": "source-line",
+                  "text": "{\"workers\":3}",
+                  "source": {
+                    "path": "C:/fixture\\.\\settings.json",
+                    "revision": "db6fb2c3afc724d9f5b5f50225246a65053338346360536b9b25c42dd75abc70"
+                  },
+                  "location": {
+                    "line": 1
+                  }
+                }
+              ],
+              "coverage": "Selected lines for this file only; not the entire file or task."
+            },
+            "contentOmitted": false
+          }
+        ],
+        "pending": [],
+        "pendingMeaning": "Caller-provided notes, not independently verified facts",
+        "contextRetentionAssumed": false,
+        "sourceCompleteness": "Saved observations; file freshness checked only for sources with path/revision",
+        "nextAction": "Use delivered evidence; refresh stale/unavailable sources through native reads. Retrieve only omitted content.",
+        "continuations": [
+          {
+            "operation": "working_set",
+            "action": "resume",
+            "workingSetRef": "ops://118fe51def019a86afaba2cdb96c208cff0482fe50551813",
+            "maxBytes": 24576
+          }
+        ]
+      }
+    },
+    {
+      "eventLine": 64,
+      "eventSha256": "63778eee5dae2bab0c7630fd00ff6422f86c6c1ad0a41583043d94100dbbc8b6",
+      "value": {
+        "kind": "evidence-packet",
+        "schemaVersion": 1,
+        "status": "partial",
+        "operation": "working_set",
+        "effectState": "none",
+        "action": "resume",
+        "evidenceState": "partial",
+        "coverage": {
+          "sourceScanComplete": false,
+          "selectionComplete": false
+        },
+        "title": "Identify the worker setting integer, its implementation and its regression test, with relative paths.",
+        "items": [
+          {
+            "ref": "ops://d94d7ebe147699669d180d89c39d2372a260087a60909190",
+            "label": "Acquired source evidence",
+            "path": "C:/fixture\\.\\checks\\test_workers.py",
+            "revision": "1c284d7b9da59ea370e384d87fa90599da9ac0ba44032ff0d2e83400f6621176",
+            "state": "current",
+            "currentRevision": "1c284d7b9da59ea370e384d87fa90599da9ac0ba44032ff0d2e83400f6621176",
+            "observationDigest": "c20baa5ce58b9f24f6e9c999e77776be5cad3325d7afebea4a9881fb0791d347",
+            "kind": "working-source",
+            "source": {
+              "ref": "ops://d94d7ebe147699669d180d89c39d2372a260087a60909190",
+              "label": "Acquired source evidence",
+              "path": "C:/fixture\\.\\checks\\test_workers.py",
+              "revision": "1c284d7b9da59ea370e384d87fa90599da9ac0ba44032ff0d2e83400f6621176",
+              "observationDigest": "c20baa5ce58b9f24f6e9c999e77776be5cad3325d7afebea4a9881fb0791d347"
+            },
+            "result": {
+              "kind": "source-evidence",
+              "items": [
+                {
+                  "kind": "source-line",
+                  "text": "    assert active_limit({\"workers\":7}) == 7",
+                  "source": {
+                    "path": "C:/fixture\\.\\checks\\test_workers.py",
+                    "revision": "1c284d7b9da59ea370e384d87fa90599da9ac0ba44032ff0d2e83400f6621176"
+                  },
+                  "location": {
+                    "line": 3
+                  }
+                },
+                {
+                  "kind": "source-line",
+                  "text": "from runtime import active_limit",
+                  "source": {
+                    "path": "C:/fixture\\.\\checks\\test_workers.py",
+                    "revision": "1c284d7b9da59ea370e384d87fa90599da9ac0ba44032ff0d2e83400f6621176"
+                  },
+                  "location": {
+                    "line": 1
+                  }
+                },
+                {
+                  "kind": "source-line",
+                  "text": "def test_configurable():",
+                  "source": {
+                    "path": "C:/fixture\\.\\checks\\test_workers.py",
+                    "revision": "1c284d7b9da59ea370e384d87fa90599da9ac0ba44032ff0d2e83400f6621176"
+                  },
+                  "location": {
+                    "line": 2
+                  }
+                }
+              ],
+              "coverage": "Selected lines for this file only; not the entire file or task."
+            },
+            "contentOmitted": false
+          },
+          {
+            "ref": "ops://70dd27656a164b35a9be58d4437fab83ff16148c7ae978c9",
+            "label": "Acquired source evidence",
+            "path": "C:/fixture\\.\\runtime.py",
+            "revision": "35e712f7611d1712f0862f5728a04b962bb0f5be845067d28a7047289b035b02",
+            "state": "current",
+            "currentRevision": "35e712f7611d1712f0862f5728a04b962bb0f5be845067d28a7047289b035b02",
+            "observationDigest": "15066009bfdc910fcd54c56d74554c2c2318617f642aacc99f3ca62f3f5ec412",
+            "kind": "working-source",
+            "source": {
+              "ref": "ops://70dd27656a164b35a9be58d4437fab83ff16148c7ae978c9",
+              "label": "Acquired source evidence",
+              "path": "C:/fixture\\.\\runtime.py",
+              "revision": "35e712f7611d1712f0862f5728a04b962bb0f5be845067d28a7047289b035b02",
+              "observationDigest": "15066009bfdc910fcd54c56d74554c2c2318617f642aacc99f3ca62f3f5ec412"
+            },
+            "result": {
+              "kind": "source-evidence",
+              "items": [
+                {
+                  "kind": "source-line",
+                  "text": "def active_limit(settings):",
+                  "source": {
+                    "path": "C:/fixture\\.\\runtime.py",
+                    "revision": "35e712f7611d1712f0862f5728a04b962bb0f5be845067d28a7047289b035b02"
+                  },
+                  "location": {
+                    "line": 1
+                  }
+                },
+                {
+                  "kind": "source-line",
+                  "text": "    return settings[\"workers\"]",
+                  "source": {
+                    "path": "C:/fixture\\.\\runtime.py",
+                    "revision": "35e712f7611d1712f0862f5728a04b962bb0f5be845067d28a7047289b035b02"
+                  },
+                  "location": {
+                    "line": 2
+                  }
+                }
+              ],
+              "coverage": "Selected lines for this file only; not the entire file or task."
+            },
+            "contentOmitted": false
+          },
+          {
+            "ref": "ops://cf6a52f3f2d8b57531535c97df1fc3cbba733f2dbac3c9e2",
+            "label": "Acquired source evidence",
+            "path": "C:/fixture\\.\\settings.json",
+            "revision": "db6fb2c3afc724d9f5b5f50225246a65053338346360536b9b25c42dd75abc70",
+            "state": "stale",
+            "currentRevision": "f7a19d9ae7957f53c42a45c891a0f4e2a8ccddd6c134fe3c460d1b11359d9cc5",
+            "kind": "working-source",
+            "source": {
+              "ref": "ops://cf6a52f3f2d8b57531535c97df1fc3cbba733f2dbac3c9e2",
+              "label": "Acquired source evidence",
+              "path": "C:/fixture\\.\\settings.json",
+              "revision": "db6fb2c3afc724d9f5b5f50225246a65053338346360536b9b25c42dd75abc70"
+            }
+          }
+        ],
+        "pending": [],
+        "pendingMeaning": "Caller-provided notes, not independently verified facts",
+        "contextRetentionAssumed": false,
+        "sourceCompleteness": "Saved observations; file freshness checked only for sources with path/revision",
+        "nextAction": "Use delivered evidence; refresh stale/unavailable sources through native reads. Retrieve only omitted content.",
+        "continuations": [
+          {
+            "operation": "working_set",
+            "action": "resume",
+            "workingSetRef": "ops://118fe51def019a86afaba2cdb96c208cff0482fe50551813",
+            "maxBytes": 24576
+          }
+        ]
+      }
+    }
+  ]
+}

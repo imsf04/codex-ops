@@ -1,0 +1,17 @@
+{
+  "name": "codex-ops",
+  "version": "0.5.0",
+  "description": "Bounded tool observations, retrievable results and dsh-ops file tools for Codex.",
+  "author": {"name": "Local developer"},
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "Codex Ops",
+    "shortDescription": "压缩输出，保留完整结果与检索能力",
+    "developerName": "Local developer",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "使用 Codex Ops 读取和筛选大型工具结果，检查原始数据完整性与上下文开销。"
+  }
+}

@@ -1,0 +1,7 @@
+__pycache__/
+bin/
+verification/
+.venv/
+.coverage*
+!.coveragerc
+htmlcov/

@@ -1,0 +1,345 @@
+{
+  "version": "0.7.0",
+  "measurementStatus": "completed mixed-cohort evaluation; not installation or release approval",
+  "model": "gpt-6.1-terra",
+  "effort": "medium",
+  "compositeCohorts": true,
+  "retainedNonLongAttempts": 26,
+  "newContinuationAttempts": 46,
+  "allAttempts": {
+    "v061": {
+      "attempts": 36,
+      "passed": 29,
+      "observedActions": 273,
+      "inputTokens": 8187681,
+      "cachedInputTokens": 7356288,
+      "uncachedInputTokens": 831393,
+      "outputTokens": 47979,
+      "modelUsageMissingAttempts": 0,
+      "medianWallSeconds": 68.8515,
+      "p95WallSeconds": 147.921,
+      "retrievalCalls": 1
+    },
+    "v070": {
+      "attempts": 36,
+      "passed": 34,
+      "observedActions": 205,
+      "inputTokens": 6326924,
+      "cachedInputTokens": 5586176,
+      "uncachedInputTokens": 740748,
+      "outputTokens": 37032,
+      "modelUsageMissingAttempts": 0,
+      "medianWallSeconds": 53.2755,
+      "p95WallSeconds": 192.586,
+      "retrievalCalls": 3
+    }
+  },
+  "commonSuccessfulPairs": {
+    "v061": {
+      "attempts": 28,
+      "passed": 28,
+      "observedActions": 197,
+      "inputTokens": 5999077,
+      "cachedInputTokens": 5359872,
+      "uncachedInputTokens": 639205,
+      "outputTokens": 36183,
+      "modelUsageMissingAttempts": 0,
+      "medianWallSeconds": 72.131,
+      "p95WallSeconds": 147.921,
+      "retrievalCalls": 1
+    },
+    "v070": {
+      "attempts": 28,
+      "passed": 28,
+      "observedActions": 159,
+      "inputTokens": 5036759,
+      "cachedInputTokens": 4442752,
+      "uncachedInputTokens": 594007,
+      "outputTokens": 28688,
+      "modelUsageMissingAttempts": 0,
+      "medianWallSeconds": 54.789,
+      "p95WallSeconds": 100.286,
+      "retrievalCalls": 3
+    }
+  },
+  "changesPercent": {
+    "allAttempts": {
+      "observedActions": -24.90842490842491,
+      "inputTokens": -22.72630064605594,
+      "cachedInputTokens": -24.06257068782517,
+      "uncachedInputTokens": -10.90278604703191,
+      "outputTokens": -22.816232101544422
+    },
+    "commonSuccessfulPairs": {
+      "observedActions": -19.289340101522846,
+      "inputTokens": -16.04110098936886,
+      "cachedInputTokens": -17.11085637865979,
+      "uncachedInputTokens": -7.070970971753976,
+      "outputTokens": -20.714147527844574
+    }
+  },
+  "medianPairedInputReduction": 0.23134218050600236,
+  "outerCalls": {
+    "availability": {
+      "v061": {
+        "observedAttempts": 30,
+        "unavailableAttempts": 6
+      },
+      "v070": {
+        "observedAttempts": 30,
+        "unavailableAttempts": 6
+      }
+    },
+    "allObservedPairs": {
+      "pairs": 30,
+      "totals": {
+        "v061": {
+          "exec": 285,
+          "wait": 0
+        },
+        "v070": {
+          "exec": 214,
+          "wait": 0
+        }
+      },
+      "execChangePercent": -24.912280701754387
+    },
+    "commonSuccessfulObservedPairs": {
+      "pairs": 23,
+      "totals": {
+        "v061": {
+          "exec": 207,
+          "wait": 0
+        },
+        "v070": {
+          "exec": 166,
+          "wait": 0
+        }
+      },
+      "execChangePercent": -19.806763285024154
+    },
+    "scope": "Exact first main-model-turn raw calls only; native oracle events excluded. Initial unobserved rows are not zero."
+  },
+  "workflowUse": {
+    "v061": {
+      "recordedTrials": 36,
+      "tasksWithWorkflow": 23,
+      "workflowByOperation": {
+        "locate": 12,
+        "incremental": 7,
+        "documents": 12,
+        "diagnose": 3
+      },
+      "retrievalLabels": {
+        "unknown": 1
+      },
+      "confirmedDisplayInduced": 0,
+      "unknownRetrievals": 1,
+      "eligibleOpportunityDenominator": null,
+      "naturalAdoptionRate": null
+    },
+    "v070": {
+      "recordedTrials": 36,
+      "tasksWithWorkflow": 21,
+      "workflowByOperation": {
+        "investigate": 21,
+        "documents": 4,
+        "diagnose": 3
+      },
+      "retrievalLabels": {
+        "unknown": 2,
+        "display_missing_evidence": 1
+      },
+      "confirmedDisplayInduced": 1,
+      "unknownRetrievals": 2,
+      "eligibleOpportunityDenominator": null,
+      "naturalAdoptionRate": null
+    }
+  },
+  "frozenTargetStatus": {
+    "actionsReduction": "FAIL",
+    "inputReduction": "FAIL",
+    "uncachedInputNonIncreasing": "PASS",
+    "presentationInducedRetrievalReduction": "UNKNOWN"
+  },
+  "presentationInducedRetrieval": {
+    "reduction": null,
+    "status": "UNKNOWN",
+    "reason": "Uses direct model-visible evidence and manual labels; unresolved cases and zero baseline remain UNKNOWN."
+  },
+  "strictFailures": [
+    {
+      "condition": "v061",
+      "task": "medium_exact_source",
+      "repeat": 1
+    },
+    {
+      "condition": "v061",
+      "task": "source_revised_during_task",
+      "repeat": 1
+    },
+    {
+      "condition": "v061",
+      "task": "long_command_failure",
+      "repeat": 1
+    },
+    {
+      "condition": "v070",
+      "task": "long_command_failure",
+      "repeat": 1
+    },
+    {
+      "condition": "v061",
+      "task": "late_log",
+      "repeat": 2
+    },
+    {
+      "condition": "v061",
+      "task": "source_revised_during_task",
+      "repeat": 2
+    },
+    {
+      "condition": "v070",
+      "task": "long_command_failure",
+      "repeat": 2
+    },
+    {
+      "condition": "v061",
+      "task": "medium_exact_source",
+      "repeat": 3
+    },
+    {
+      "condition": "v061",
+      "task": "source_revised_during_task",
+      "repeat": 3
+    }
+  ],
+  "baselineSuccessCandidateFailurePairs": [
+    {
+      "task": "long_command_failure",
+      "repeat": 2
+    }
+  ],
+  "developmentConsumption": {
+    "recordedCompletedAttempts": 83,
+    "interruptedAttempts": 1,
+    "knownUsageLowerBound": {
+      "inputTokens": 16594497,
+      "cachedInputTokens": 14783232,
+      "uncachedInputTokens": 1811265,
+      "outputTokens": 95983,
+      "totalTokens": 16690480
+    },
+    "excludedInvalidProducerAttempts": 2,
+    "unknownUsage": "Unreported in-flight usage from first interrupted attempt remains unknown.",
+    "scope": "Comparable composite + original invalid LF producer attempts + first stopped candidate. Retained rows counted once."
+  },
+  "releaseGatePassed": false,
+  "limitations": [
+    "Native actions, outer calls and internal worker launches are different metrics.",
+    "No dollar billing conversion or general workload/speed claim.",
+    "Whole-run outer counts unavailable for initial 12 attempts; observed subset reported separately.",
+    "Workflow counts in controlled prompts are not everyday or eligible-opportunity adoption rates.",
+    "Wall time includes host.run setup, excludes fixture preparation and native oracle; instrumentation changes I/O overhead.",
+    "Original producer failures and interrupted first-round cost remain retained; no outcome or threshold is regraded."
+  ],
+  "evidenceSha256": {
+    "v070-costs-combined.json": "74e01e1588d711d5091233be93892f4d945d8b2efd3b19b9415e77e3f9c3156e",
+    "v070-combined-tool-audit-final.json": "246e9de5e1a92e3e563dab4a828e7e142954c264c1403f309446f429adc90a52",
+    "v070-first-usage-audit.json": "5ba460977c6fc55a813d8e5100908afdea32f08cd3bd332de56cfea9f1253f9f"
+  },
+  "finalCandidate": true,
+  "sourceSha256": {
+    "files.py": "bcae005252663a04a23efea30538d2a64d556ec347d0a65de6325ee3d601b1f6",
+    "hook.py": "d1fbcf6bf9fd3a1ebd5666813a3810c93ed151f229c3e152641517b52ac9781a",
+    "reducers.py": "75cb2b61a3ff69deabdcc826cb378751678dc7c0ad8c0f52580fc52a17a5c6d7",
+    "runtime_status.py": "812375a43d3500e803b4dd0226460723f15a9bf07bb69d9210037de30e4bd7ad",
+    "server.py": "619281901b7a2cbf4cdd7f3f020aee31ceb8586f9f335adeb0d3d57dd4099420",
+    "structured.py": "34b35e4162e055fdfe3cae19f3df396f1651fb89c504b3a86309d6a987127ac4",
+    "telemetry.py": "b3d78a7561a009279fecd699cb5e8127d43dca5f18edfa1275d536baf7d0b140",
+    "progress.py": "4afcb3feb9d3d3e8ab86c76447f941b7dd9198d025e743b02a33c334d6fb2906",
+    "presentation_policy.py": "6ad19eda140b39cc8aecac2ad33b1bf4a27c64e3e9f50d6b75654923460d7aba",
+    "shell_receipt.py": "ed01382742cb79da96e13f14c2f0241b3942bcac395371471d4c1a9a10cd3b71",
+    "store.py": "df8e2feeda8979cf5b530314b3f0beda2bcee9314859ef7dd61461ba6be9506e",
+    "experimental/presentation.py": "a60058b15dd3b296953a80a70b7ac8491b817575bc383217561b24fc46a10a0e",
+    "runtime_bridge/control.py": "fd769e600625e645d53fd21fb64073c043e2e830da0cb8bafce596b7202213d8",
+    "runtime_bridge/grpc_relay.py": "cbd9b581777840c4cd11726d96d6e02e124057b36af483a5041b1dc074716be7",
+    "runtime_bridge/manager.py": "9a595463b351b6130cb004b77efa35b7df0cb72a427842ada90c8d58be20cf63",
+    "runtime_bridge/projection.py": "3b78958faa60f38b3fb7f17c120ec7a7d024cbb36494357ec52a4991c7e3be22",
+    "runtime_bridge/wire.py": "5e0664bfdd8724cb2408da343f666483b2025db3ee41811a246a60fd0a82dd35",
+    "telemetry_details.py": "ce0412a4e9b0e6c1d768153c3f357b40c4412d2be1fc5e5a5d7ff301a3a4eed9",
+    "dashboard.py": "1d9e36b98071e8101eb076c905505c31fca2352242bf6b656bd6da366f2d7447",
+    "bridge_context.py": "b3e988aa3b52d89a1fa78df091ffdca871d64b1d2df90d42e56b08399104a37e",
+    "frame_dedup.py": "4827aa31161903dcdd7a532144cb8de1dd46a96a2275fbbd9db617700ee9f5db",
+    "record_preview.py": "95968d52dae3903ae83dc1a04784bababbc55b7f970382b4c1497cf66d99b358",
+    "retrieval_views.py": "c0b383f0cd7ec02906a7cc771f4eac7e1a3bc1c320dda2bb2aec3fdf0b21373e",
+    "observation_metrics.py": "0261e1b462b9a1d9c9acffad3fafb98c3af5362409bab27236f4924cae7f5123",
+    "mutations/__init__.py": "c06256b3e8f68f4cdfb3d94d7da793c91ca863bbb7c39129ac0c0fb35e691763",
+    "mutations/__main__.py": "89d1553131b98d23ee271982cb4146d3ff8659bd46537a736a3764e4d12dab39",
+    "mutations/cli.py": "854f8b3b236d74825591bb98b933e84f9c8bf172fbba0eeddc41df331f87bdfc",
+    "mutations/engine.py": "c8507f77cc3818d8f79806710ef6fee7b76bdc89d9b67b5ff23918a77eda62ce",
+    "mutations/journal.py": "944a2c8ae2ac3c9342afe0574c21169797b34e4342eb351ef0dd92ad1ae51fa8",
+    "mutations/paths.py": "eaa21d847931726ebcee05a5f270d4b367be42aafaed2d9fa55b4e33fcf5e979",
+    "mutations/planning.py": "6169e8d67a9c863b8f3b32f1902f1e9ecdf215f560f0860edfba1d368297b7c0",
+    "mutations/task_cli.py": "cc19e82eb606cd0e5d17f2a1db235308426c71ab092c05afc93de3d02e6a8211",
+    "mutations/task_directories.py": "62a11f7896edac3d4e3b52c5afaf2bb90fcbf1189a8946510b5684767ba21f7e",
+    "mutations/task_engine.py": "1b8d289dbf6963ee7a35f1688844c6bac9b6cc3a9510c36596a0375a9600cd38",
+    "mutations/task_execution.py": "ab64fa762e6dbb8b6001abe275a76f7b3e272107bbbd919bb899309a28e0fcb6",
+    "mutations/task_journal.py": "835431dc3dbe03ecd0ea155c28efdd02c52948e2d8e61a5e0a772d55e7190a2e",
+    "mutations/task_planning.py": "7fed2b16ad3b1aec97c4e1de5925d561bda10b09607396d9e7a2869d18e99ede",
+    "mutations/task_recovery.py": "9484f2fc34e9ec34f942aee233cb1b7cfef7e3cfb3182364b931ca2d873ebe68",
+    "mutations/task_tree.py": "b2772181a24e9c6843cc3462f1ab5f5351e996b6dacd4cb3a7b5715a308ecb95",
+    "mutations/worker.py": "583784783e3cbb4b87786e3a47bd5e44c4e92ab15ff701813c9178f2e1605b3d",
+    "query_workflow.py": "cb6f9ff1512034093295dd148c8a94e34367b2da195084156ed85e947612bd79",
+    "catalog.py": "08259f7d8c8a84592451794559667714885d1236b7a5ad868b8bcf6497b0dd4a",
+    "semantic_preview.py": "5399c452028cd8316e1ce9bb7a1d6e25b7b3530d9f9164855106231a0a6cbb61",
+    "telemetry_windows.py": "0514e8390c0c168ce3d1878894724e202f7a2d164a44be10ac3aecd5985293cb",
+    "task_snapshot.py": "8b732740cd1c83a31ffa3796bcdbe6a878ef15c2c5cd1490d5fed429929119c5",
+    "dashboard_server.py": "ed83d1d3a8fc6f455329baf8dc0f73b7dd54b2a4ee1dae793700c1ca425af42d",
+    "query_aggregates.py": "f7519526d58801e08f6e6499ec08b2860a2045a2914ad7b4c5a51e469e994e91",
+    "result_batch.py": "506b5e9d04294c8839700ce5a52a028b17d2312f13658d7c750c46a36cb30a2f",
+    "query_preview.py": "3455311e73b6e43a57defc328d942f2fb7de1f09da1c29f94adc346be4591fba",
+    "cache_reader.py": "7645136cd32872a92ce2d71a308c47fca066111c424623db0fcdf79174abb6b7",
+    "readonly_snapshot.py": "28c15f05034a17814dddef56710c261c334fda73e9b9f7ae4e7227682c342c0f",
+    "adaptive_budget.py": "271bbb62ac73fa10365b7c941ee06cc194c7222a7bb3e4439b968ee8d3b62e0d",
+    "adaptive_budget_ledger.py": "07fa5955cb7a4dd12038bf94edd4368989b09f3b12bd1a8a426fb873b2575da3",
+    "capability_catalog.py": "d035ce665cf4ce9bc6e1ca7a05a38b6b5e33a675ff4f7b15a9384d7390d8762d",
+    "doctor.py": "e719cc093888b6701286b2c56238536df673f2ba2639886ea99096eed8d5eb9c",
+    "evidence_index.py": "863e3b43ee28432321e8795bee1eea4ca32f47f14b9b068e6f73ac37361a4cde",
+    "evidence_index_budget.py": "3b6846c863dbf0437e545ded487e82d7a597dcf21d8272aa04e9ff9fd641d2cb",
+    "evidence_index_query.py": "d3b5560ebdef185d48bfd4ac5162848ebb9859beed7cbd3595a73717c6dff81d",
+    "evidence_index_rows.py": "6a46ed9956b4ed383969c4498d07289555be3185c781b1c56ed07ea85c4f6553",
+    "evidence_packet.py": "c407d943adb8f6ed587639807b9fe43b682ea219e65822b7ed92eab05500c95f",
+    "evidence_preview.py": "83886b6d5d3036997c10de3d7ebacbca97e3932c89da12164c43aa8422e90955",
+    "investigate.py": "fad9acb8a113a5c5b54a3197c421675dd03d950007ba6128487e68398520a455",
+    "investigate_query.py": "ec4c23977d5db38fadb3f48729beb94bef40c394b116155c8c30122031178c30",
+    "output_budget.py": "4bdc1720ad0d409669d221e50a0695c9920c3b635f16f15ba6c6dc7d30530fab",
+    "sdk_workflow.py": "b88828c3130ef8c982a40587a68ffce57ff56f09a06ad5c35c13ec8e6e383d8d",
+    "session_scope.py": "f833329647fa83aef99421f0d81ee07bc52082065b87f9deaec20f497e5fbcf7",
+    "task_api.py": "e9eaf2f0b3cf931f4a4c8cc4461ce266bcb1f764b12cb96dde5caf1a5b1fd88a",
+    "task_cost.py": "a49510a2c662c851b48cf45ab7213b19b340b7c89962a36134f956beb09e1841",
+    "task_cost_records.py": "14ec6876e7f07b919abdeaeec6b6c8f7a7a07a62bad3c962d020bb4e00463cb5",
+    "task_cost_workflows.py": "5cf318b2278c1de124643ea5b1f3935416a0193b946c37de0da72d9b1590a1ca",
+    "task_preview.py": "370309e6779f2e03221605327ebf276ec3d92bed6183d4f39066357bf32170eb",
+    "verification_workflow.py": "412c1c54dc451ded763c2160a29848185f85a9fb55217e807182379306255fdb",
+    "workflow.py": "7c0864e258572b8dcb151d6318f296b66db0bd9df49302128778298719efdad3",
+    "workflow_diagnostics.py": "3ad7901664f373777e4ecc7cc995b2146f5747f0a495ccd29bad6dff6ea6967a",
+    "workflow_document_rows.py": "83f0653efa12477265c44803e6e66a9ffb57b3ff87afdcbad9e7bff34b442c44",
+    "workflow_documents.py": "1b18dcf74f7d2b5b840fda24efc63b7df8b22b025ea61b047f951d6e2d7097fb",
+    "workflow_incremental.py": "59a775c07adee5f12f50e1e0b51f9f3d4e65bfc5dd338a0b300b25ed26dff58f",
+    "workflow_inline.py": "cd632a77695c826a8d89132558fb24328473486d1fc03aba90084681bb04389f",
+    "workflow_log.py": "16f79c946f41204713d4bb0e79c94af39cb457016b75aeeb6da23c3528b6d51f",
+    "workflow_preview.py": "d68ab282f4911ed156f4c4befffbd748afcaf3e2937728d8b22c6857814f7021",
+    "workflow_validation.py": "bb21a430aff7dcc579ae972fb03a4b5b9544eced7bf800e76ff79415b3672686",
+    "working_set.py": "dbe8dcce31541e08926e3a81127ed0b7b4644617623bdb5ac55cce4a5bc7a5ad",
+    "working_set_sources.py": "64cda9ee54bceb371c47414325ba9175c2c8ef3f79785cf422df10357a6dd7c4"
+  },
+  "experimentalAcceptance": {
+    "userApproved": true,
+    "approvedAt": "2026-10-30T01:51:21.621954+00:00",
+    "version": "0.7.0",
+    "decision": "先启用当前 0.7.0，保留未达标记录和回退（推荐）",
+    "scope": "Install and enable this validated candidate while preserving original failed/unknown cost targets and 0.6.1 rollback",
+    "sourceHashesMatch": true
+  }
+}

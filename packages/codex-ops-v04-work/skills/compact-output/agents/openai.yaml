@@ -1,0 +1,5 @@
+interface:
+  display_name: "Compact output"
+  short_description: "保留原始结果，按需展开工具输出"
+policy:
+  allow_implicit_invocation: true

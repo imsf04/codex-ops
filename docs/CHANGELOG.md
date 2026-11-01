@@ -5,6 +5,152 @@ All notable changes to this package are recorded here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+- Remove the unused one-shot desktop restart helper and obsolete internal helpers.
+- 移除未使用的一次性桌面重启助手及过时的内部辅助函数。
+
+### Codex Ops 0.8.0 candidate / 候选版
+
+- Add a compound read-only Rust kernel using the existing dsh-ops core, direct root-and-question investigation, typed document routing, scoped automatic evidence recovery and native outcome diagnostics. Preserve complete program values and exact emitted-text retrieval.
+- Separate selected workflows, useful evidence, automatic saves and actual reuse; count native actions, outer calls, worker starts and model usage at their own boundaries. Fresh native-plugin model acceptance is pending; no new savings claim or live activation yet.
+- Frozen quality checks pass 543 tests. All 932 measured Python functions have CRAP <=6 with 98.99% combined coverage; 40 new Rust functions have maximum measured CRAP 5.0043. Retain failed pilot records and isolate audit logs from task fixtures.
+- 新增复用现有 dsh-ops core 的复合只读 Rust 内核、直接问题调查、类型化文档读取、按聊天隔离的自动证据恢复及原生结果诊断；程序完整值与精确原文恢复保持不变。
+- 分开统计工作流选择、有效证据、自动保存与实际复用，以及各层调用和模型实耗。543 项测试通过，932 个 Python 函数 CRAP 均不超过 6，覆盖率 98.99%；40 个新 Rust 函数最高 CRAP 5.0043。原生插件模型成本验收进行中，尚未替换本机 0.7.0。
+
+### Codex Ops 0.8 research / 调研
+
+- Audit 120 retained local DSH sessions and real tool chains; distinguish the installed dsh-ops 0.3.0 configuration, PTC composition and host history pruning from plugin-wide savings.
+- 审计本机 120 份 DSH 会话与真实调用链，区分已安装的 dsh-ops 0.3.0 配置、PTC 组合执行及宿主历史裁剪；不将这些指标误算为插件整体节省。
+- Document upstream comparison, observed workflow adoption, cost regressions and a scoped Rust-core proposal; include local timing and packet measurements. No runtime behavior changes.
+- 记录上游对比、工作流采用证据、成本回归及局部 Rust 内核提案，附本机计时和证据包测量；未改变运行行为。
+
+### Codex Ops 0.7.0
+
+- Add question-driven source evidence, bounded direct packets, SQLite FTS5 reference search,
+  scoped working-set recovery, native verification/polling and actual chat cost accounting.
+  Reuse the existing native adapters and Python SQLite; no new dependency or copied third-party code.
+- Pass 459 automated tests, eight app-server comparisons, three instrumented shim cases and
+  15 staged native cases. All 797 Python functions across 83 measured modules have CRAP <=6.
+- Preserve all model failures and fixture corrections. Strict success is 29/36 to 34/36;
+  28 common-success pairs reduce native actions 19.29% and input tokens 16.04%, below the
+  frozen 25%/20% targets. Display-induced retrieval reduction remains unknown. The user
+  explicitly accepted activation with these results unchanged and a 0.6.1 rollback.
+- 新增问题驱动取证、统一有界直返、跨引用FTS5检索、工作集恢复、原生验证与实耗账本。
+  无新增依赖或第三方源码复制。459项测试与15项暂存原生检查通过，797个Python函数CRAP均<=6。
+  严格成功29/36→34/36；共同成功动作/输入减少19.29%/16.04%，未达25%/20%目标。
+  用户明确同意先启用，保留FAIL/UNKNOWN、原始失败与0.6.1回退。
+
+### Codex Ops 0.6.1
+
+- Add native log-path diagnosis, error-first evidence, direct small document results and matching table rows with columns. Keep bounded large results retrievable and avoid recapturing self-contained small workflows.
+- Replace the SDK-heavy workflow directory with direct recipes and concise routing. Filter stale/stopped runtime ancestry records before choosing the owning bridge; native positive/negative tests retain reference ownership and reconstruct 52,000 bytes exactly.
+- Validate 390 automated tests, 14 staged runtime cases and 658 Python functions with maximum CRAP 6. In ten common successful task pairs, observed actions fall 66 to 50 and cumulative input tokens fall 1,950,933 to 1,524,499. Both complete 11/12 final model tasks; preserve the two native ACCESS_DENIED artifact failures and the failed perfect-task criterion. No general workload or monetary-savings claim.
+- 新增原生日志路径诊断、错误优先证据、小文档直返及完整匹配表格行/列名；大结果保持有界可回读，小型自包含工作流避免再次包装成引用。
+- 工作流目录改为直接配方和短路由；选择所属 bridge 前先排除过期/停止祖先记录，原生正反控验证所有权规则不变并精确回读 52,000 字节。
+- 390 项自动测试、14 项暂存运行时场景通过，658 个 Python 函数 CRAP 最大 6。10 个共同成功任务配对动作从 66 降至 50，累计输入 token 从 1,950,933 降至 1,524,499；最终两组均为 11/12，保留两次原生写入 ACCESS_DENIED 和未通过的全任务成功门槛，不宣称普遍或金钱成本收益。
+
+### Codex Ops adoption investigation (candidate not installed)
+
+- Verify live Desktop 0.6.0 and exact automatic-output round-trip. Twelve routing-only model trials improve workflow adoption from 1/6 to 6/6 while median paired input increases 13.4%; no efficiency gain claimed. Isolated catalogue/diagnostic repairs pass 358 tests with maximum Python CRAP 6; production source remains unchanged.
+- 验证桌面端实际 0.6.0 与自动输出完整回读。12 次路由对照将采用率从 1/6 提至 6/6，但配对输入中位数增加 13.4%，未证明效率提升。隔离目录/诊断修复通过 358 项测试，Python CRAP 最大 6；正式源码未变。
+
+### Codex Ops 0.6.0
+
+- Add composable location/diagnostic/document/incremental workflows, an executable Code Mode SDK, explicit bounded reference resolution and native command-to-diagnosis composition.
+- Add diagnostic/Git/MCP evidence previews and a shared soft output-frame budget that never inflates an existing compact receipt.
+- Add staged file/tree plans, native status/cancel/resume/rollback and interruption recovery, including partially completed child moves.
+- Bind native MCP references to available chat/permission metadata and automatic output to its verified runtime; select the nearest owning shim and distinguish configured from active versions.
+- Validate 354 automated tests and 622 Python functions (maximum CRAP 6). Complete 120 real-model trials while retaining environment/oracle corrections and failures. No general efficiency improvement was established; new workflow/task adoption was zero in the controlled small-task suite.
+- 新增定位/诊断/文档/增量组合工作流、可执行 Code Mode SDK、显式有界引用解析和原生命令串接诊断。
+- 新增诊断、Git 与 MCP 证据摘要和整帧软预算；预算不会放大已有紧凑回执。
+- 新增分阶段文件/目录计划、原生状态/取消/恢复/回滚，以及包含子移动部分完成状态的中断恢复。
+- 原生 MCP 引用绑定可取得的聊天/权限元数据，自动输出绑定已验证运行时；选择最近所属启动器并区分配置版本与实际版本。
+- 354 项自动测试、622 个 Python 函数 CRAP 均不超过 6。完成 120 次真实模型任务，保留环境/oracle 修正与失败；未证明普遍效率提升，受控小任务中新的工作流/任务工具采用次数为零。
+
+### Codex Ops 0.5.0
+
+- Add fused search/context retrieval, an on-demand 17-operation catalogue, and bounded multi-reference count/group queries.
+- Selectively compact completed small test/build logs while retaining diagnostics, exact raw values and retrieval pages.
+- Add completed five-minute telemetry windows and a refreshable localhost dashboard with bounded, read-only task journal summaries.
+- Load saved mutation plans through a bounded read-only cache snapshot; retain native Windows permission denials and journal states.
+- Validate 272 tests and 430 Python functions with maximum CRAP 6. A five-task real-model pilot passed 4/5 baseline and 5/5 enabled outcomes; only one successful pair was comparable, using fewer total tokens but taking longer. Changed fixture layouts and missing metrics prevent broader efficiency claims.
+- 新增搜索与上下文融合读取、按需展开的 17 项操作目录，以及有界多引用计数/分组查询。
+- 选择性压缩已完成的小型测试/构建日志，保留诊断、程序内部完整值和明确取回页。
+- 新增按完整五分钟桶统计的时间窗口，以及可刷新的本机面板和有界只读任务日志摘要。
+- 通过有界只读缓存快照加载修改计划；保留 Windows 原生权限拒绝和任务日志状态。
+- 272 项测试、430 个 Python 函数 CRAP 均不超过 6。五任务模型试验的基线通过 4/5、启用组通过 5/5；唯一可比成功任务总 token 较少但耗时更长，目录权限布局变化与缺失用量不支持普遍效率结论。
+
+### Codex Ops 0.4.0
+
+- Add bounded outline/find retrieval, useful native record previews and same-response reference reuse; preserve exact values and report incomplete scans.
+- Add source/session attribution, separately measured retrieval/repeated-page costs and an offline interactive statistics snapshot.
+- Add six-operation CAS plans with native-shell execution, durable audit, explicit resume/rollback and interruption validation. MCP planning does not execute writes.
+- Validate 219 automated tests and 325 Python functions with maximum CRAP 6; add a controlled real-model repair pilot with actual usage and independent outcome checks. Cross-model-step read deduplication remains unsupported by available context evidence.
+- 新增有界结构发现/关键词定位、文件记录预览与同次返回内引用复用；完整值保持原样，不完整扫描明确标记。
+- 增加工具/会话归因、独立回读和重复页成本、离线交互统计面板。
+- 六类文件修改先生成 CAS 计划，再经原生 shell 执行；提供持久审计、显式续做/回滚与进程中断验证，MCP 计划不执行写入。
+- 219 项自动化测试、325 个 Python 函数 CRAP 均不超过 6；新增记录真实用量和独立结果检查的模型修复试验。现有上下文证据仍不足以启用跨模型步骤读取去重。
+
+
+- Codex Ops 0.3.0 adds persisted emitted-text accounting separated by origin,
+  structured previews, bounded running-progress references, explicit retrieval
+  passthrough, failure-log compaction with unchanged native diagnostics, and four-way
+  read-only batches with inspect/table/DOCX/restricted PDF support from the existing worker.
+- Codex Ops 0.3.0 新增按来源分账的持久文字统计、结构化预览、运行中重复进度引用、
+  明确取回页透传、保留原生诊断的失败日志压缩，以及最多四项并发的只读 batch；复用
+  原有 worker 提供 inspect/表格/DOCX/受限 PDF 读取，新增代码均纳入 CRAP≤6 验收。
+
+- Refactor Codex Ops 0.2.3 observation retrieval, hook execution evidence, runtime
+  lifecycle and presentation adapters behind their existing public interfaces.
+  Enforce unrounded CRAP <=6 for every measured Python function, including new
+  private methods; preserve the coverage/formula/module scope and native behavior.
+- Codex Ops 0.2.3 保留对外 interface，集中结果检索、hook 执行证据、生命周期与呈现
+  adapter 的内部职责；所有计分 Python 函数（含新增私有方法）按未舍入 CRAP ≤6
+  验收，保持原计算公式、覆盖率口径、模块范围与原生行为。
+
+- Consolidate Codex Ops 0.2.2 MCP, hooks and bridge into a locked uv production
+  environment; keep development metrics dependencies separate. Add reproducible
+  function-level CRAP reports with Python branch/statement coverage and separate
+  Rust complexity reporting, without inventing Rust coverage.
+- Codex Ops 0.2.2 的 MCP、hooks 与桥接统一使用 uv 锁定的专属生产环境，开发测量依赖
+  独立；新增可复现的函数级 CRAP 报告，注明 Python 语句/分支覆盖率口径，Rust 仅报告
+  实测复杂度，不假定覆盖率。
+
+- Fix Codex Ops 0.2.1 status publication under Desktop MSIX LocalAppData redirection:
+  recover from WinError 17 without abandoning the host bridge; test the actual
+  production status directory rather than only temporary directories.
+- 修复 Codex Ops 0.2.1 在桌面 MSIX 本地目录重定向下发布状态的 WinError 17，避免
+  桥接启动后立即回退；增加实际生产状态目录的端到端验证。
+
+- Add Codex Ops 0.2.0: adapt the installed app-server's HTTP/gRPC Code Mode host,
+  preserve inbound values byte-for-byte, and compact outbound text/notify/wait.
+  A native Windows CLI shim owns process trees with Job Objects; a versioned
+  installer configures the Desktop CLI override with status and rollback commands.
+- 新增 Codex Ops 0.2.0：适配本机 app-server 的 HTTP/gRPC Code Mode host，入站值
+  逐字节保留，自动压缩外层 text/notify/wait；Windows 启动器通过 Job Object 管理
+  子进程，提供版本化安装、桌面 CLI 覆盖、状态检查和回退。桌面主进程重启后加载。
+
+- Add an opt-in code-mode host presentation prototype: compact outbound text,
+  notifications and yielded results while forwarding inbound tool values unchanged.
+  The original stdio harness remains available alongside the Desktop gRPC adapter.
+- 新增隔离的 code-mode host 呈现原型：自动压缩 text、notify 和分段结果，原样转发
+  程序内部的工具返回值。原始 stdio 测试工具与后续桌面 gRPC 适配器一同保留。
+
+- Enable Codex Bash completion hooks after correlating native execution status;
+  retain failures and running chunks, preserve code-mode values, and label final
+  polling chunks separately from complete execution output.
+- 启用 Codex Bash 完成 hook：核对原生执行状态后压缩成功输出，失败和运行中返回
+  保持原样，保留代码模式原值，并区分轮询末块与整个执行的输出。
+
+- Add the local Windows Codex adapter in `packages/codex-ops`: native plugin hooks,
+  bounded result capture/retrieval, byte metrics, and read-only upstream worker tools.
+  Verify the code-mode boundary against the installed host; outer exec output uses
+  explicit capture because PostToolUse does not intercept it. DSH behavior is unchanged.
+- 新增本机 Windows Codex 适配插件：原生 hooks、结果存档与分页检索、字节统计和
+  只读 Rust 文件工具。实测外层 exec 不触发 PostToolUse，因此采用显式 capture；
+  DSH 原有行为不变。
+
 ## [0.5.0] — 2026-10-27 — Preset-mode component roster
 
 ### Breaking changes
