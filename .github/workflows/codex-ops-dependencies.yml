@@ -63,6 +63,17 @@ jobs:
         run: uv run --locked --no-dev python -m unittest discover -s tests -p test_portable_startup.py
       - name: Check read-only snapshot safety
         run: uv run --locked --no-dev python -m unittest discover -s tests -p test_cache_reader.py
+      - name: Check bundle assembly
+        run: uv run --locked --no-dev python -m unittest discover -s tests -p test_portable_bundle.py
+      - name: Build and verify relocated preview bundle
+        run: uv run --locked --no-dev python tests/check_portable_bundle.py "${{ runner.temp }}/codex-ops-preview"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: codex-ops-preview-${{ matrix.os }}
+          path: ${{ runner.temp }}/codex-ops-preview/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
       - uses: actions/upload-artifact@v7
         with:
           name: codex-ops-native-${{ matrix.os }}

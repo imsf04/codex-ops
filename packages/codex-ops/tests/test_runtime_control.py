@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -12,6 +13,17 @@ spec.loader.exec_module(control)
 
 
 class ControlTests(unittest.TestCase):
+    def test_runtime_settings_accept_explicit_installed_python(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            python = root / 'python.exe'
+            native = root / 'native.exe'
+            python.write_bytes(b'python')
+            native.write_bytes(b'native')
+            with patch.dict(os.environ, {'CODEX_OPS_BRIDGE_PYTHON': str(python)}), \
+                    patch.object(control, '_native_cli', return_value=native):
+                self.assertEqual(control._runtime_settings()['bridge-python.txt'], str(python))
+
     def test_immutable_bundle_and_enable_verify_payload(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
