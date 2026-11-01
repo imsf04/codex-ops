@@ -88,14 +88,18 @@ class InstallationInterfaceTests(unittest.TestCase):
     def test_stage_rejects_wrong_version_missing_runtime_and_changed_alias(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            with patch.object(control, 'DESTINATION', root):
+            native = root / 'native.exe'
+            native.write_bytes(b'native fixture')
+            with patch.object(control, 'DESTINATION', root), \
+                    patch.object(control, '_native_cli', return_value=native), \
+                    patch.dict(os.environ, {'CODEX_OPS_BRIDGE_PYTHON': sys.executable}):
                 with patch.object(control, 'VERSION', 'not-the-manifest'):
                     with self.assertRaisesRegex(ValueError, 'versions must match'):
                         control.stage()
                 with patch.object(control, '_native_cli', return_value=root / 'missing.exe'):
                     with self.assertRaises(FileNotFoundError):
                         control.stage()
-                with patch.object(control.Path, 'home', return_value=root):
+                with patch.dict(os.environ, {'CODEX_OPS_BRIDGE_PYTHON': str(root / 'missing-python.exe')}):
                     with self.assertRaises(FileNotFoundError):
                         control.stage()
                 control.stage()
@@ -110,7 +114,8 @@ class InstallationInterfaceTests(unittest.TestCase):
             native.write_bytes(b'native fixture')
             with patch.object(control, 'DESTINATION', root / 'bundle'), \
                     patch.object(control.shutil, 'which', return_value=None), \
-                    patch.dict(control.os.environ, {'CODEX_APP_RUNTIME_CLI_PATH': ''}), \
+                    patch.dict(control.os.environ, {'CODEX_APP_RUNTIME_CLI_PATH': '',
+                                                    'CODEX_OPS_BRIDGE_PYTHON': sys.executable}), \
                     patch.object(control, 'user_environment', return_value={'value': str(native)}) as environment:
                 control.stage()
                 self.assertEqual((root / 'bundle/bin/real-cli.txt').read_text().strip(), str(native))

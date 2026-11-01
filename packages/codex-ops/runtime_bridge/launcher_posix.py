@@ -168,8 +168,11 @@ def _supervise(cli, manager_path, arguments, index, heartbeat, result, launcher_
 def main(arguments=None, *, cli=None, manager=None):
     arguments = list(sys.argv[1:] if arguments is None else arguments)
     cli = cli or os.environ.get('CODEX_OPS_REAL_CLI')
-    if not cli or not Path(cli).is_file():
-        raise SystemExit('Set CODEX_OPS_REAL_CLI to the native Codex executable')
+    if not cli or not Path(cli).is_absolute() or not Path(cli).is_file():
+        raise SystemExit('Set CODEX_OPS_REAL_CLI to the absolute path of the native Codex executable')
+    entry = Path(__file__).resolve().parents[1] / 'bin/codex-ops-cli'
+    if entry.exists() and os.path.samefile(cli, entry):
+        raise SystemExit('CODEX_OPS_REAL_CLI must not point to the Codex Ops launcher')
     index = service_index(arguments)
     if index is None:
         os.execv(cli, [cli, *arguments])

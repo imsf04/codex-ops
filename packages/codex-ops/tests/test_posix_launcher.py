@@ -29,7 +29,8 @@ class PosixLauncherTests(unittest.TestCase):
         cli_script = self.root / 'cli.py'
         cli_script.write_text('import json,os,sys,time\n'
                               'p=os.environ["CLI_STATE"];open(p+".tmp","w").write(json.dumps({"pid":os.getpid(),"args":sys.argv[1:],"env":os.environ.get("CODEX_OPS_AUTO_OUTPUT")}));os.replace(p+".tmp",p)\n'
-                              'time.sleep(float(os.environ.get("CLI_SLEEP","0")))\n')
+                              'time.sleep(float(os.environ.get("CLI_SLEEP","0")))\n'
+                              'raise SystemExit(int(os.environ.get("CLI_EXIT","0")))\n')
         self.cli.write_text('#!/bin/sh\nexec ' + shlex.quote(sys.executable) + ' ' + shlex.quote(str(cli_script)) + ' "$@"\n')
         self.cli.chmod(0o755)
         self.manager = self.root / 'manager.py'
@@ -88,9 +89,28 @@ class PosixLauncherTests(unittest.TestCase):
                 os.kill(pid, 0)
 
     def test_explicit_host_is_forwarded_unchanged(self):
-        subprocess.run(self.command('app-server', '--code-mode-host', 'http://127.0.0.1:7'), env=self.env, check=True, timeout=5)
+        subprocess.run(self.command('app-server', '--code-mode-host', 'http://127.0.0.1:7'),
+                       env={**self.env, 'CODEX_OPS_AUTO_OUTPUT': '1'}, check=True, timeout=5)
         state = json.loads((self.root / 'cli.json').read_text())
         self.assertEqual(state['args'], ['app-server', '--code-mode-host', 'http://127.0.0.1:7'])
+        self.assertIsNone(state['env'])
+        self.assertFalse((self.root / 'manager.pid').exists())
+
+    def test_server_exit_code_is_preserved(self):
+        result = subprocess.run(self.command('app-server', '--stdio'),
+                                env={**self.env, 'CLI_EXIT': '23'}, timeout=10)
+        self.assertEqual(result.returncode, 23)
+        manager = int((self.root / 'manager.pid').read_text())
+        with self.assertRaises(ProcessLookupError):
+            os.kill(manager, 0)
+
+    def test_missing_native_host_falls_back_without_injection(self):
+        self.host.unlink()
+        result = subprocess.run(self.command('app-server', '--stdio'), env=self.env,
+                                capture_output=True, text=True, check=True, timeout=10)
+        state = json.loads((self.root / 'cli.json').read_text())
+        self.assertEqual(state['args'], ['app-server', '--stdio'])
+        self.assertIn('native Code Mode host unavailable', result.stderr)
         self.assertFalse((self.root / 'manager.pid').exists())
 
     def test_killing_launcher_during_startup_cleans_manager(self):
@@ -167,6 +187,16 @@ class PosixLauncherTests(unittest.TestCase):
         first.wait.assert_called_once_with(timeout=5)
         second.wait.assert_called_once_with(timeout=5)
         self.assertEqual(failures, ['blocked'])
+
+    def test_native_cli_cannot_refer_back_to_the_launcher(self):
+        bridge = self.root / 'runtime_bridge'
+        binary = self.root / 'bin'
+        bridge.mkdir()
+        binary.mkdir()
+        (binary / 'codex-ops-cli').symlink_to(self.cli)
+        with patch.object(launcher_posix, '__file__', str(bridge / 'launcher_posix.py')):
+            with self.assertRaisesRegex(SystemExit, 'must not point'):
+                launcher_posix.main(['app-server'], cli=str(self.cli), manager=str(self.manager))
 
 
 if __name__ == '__main__':

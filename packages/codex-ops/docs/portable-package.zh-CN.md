@@ -28,9 +28,10 @@ $env:CODEX_OPS_BRIDGE_PYTHON = (Resolve-Path ./plugin/.venv/Scripts/python.exe).
 
 Linux 和 macOS 安装程序还会准备 `plugin/bin/codex-ops-cli`。如需试用，将
 `CODEX_OPS_REAL_CLI` 设置为原生 Codex 可执行文件；同一目录必须包含
-`codex-code-mode-host`，然后将启动 `app-server` 的宿主配置为使用该启动器。未验证的原生宿主
-输出会原样转发；设置了 HTTP 代理时会回退到原生输出。桌面程序专用启用方式及更多宿主版本
-尚未验证。
+`codex-code-mode-host`，然后将启动 `app-server` 的宿主配置为使用该启动器。压缩仅针对已验证的
+Codex CLI 0.165.0-alpha.1 的 Linux x64、macOS ARM64 和 macOS x64 宿主哈希启用；未验证的
+原生宿主输出会原样转发。设置 HTTP 代理时会回退到原生输出。桌面程序专用启用方式及更多宿主
+版本尚未验证。
 
 Linux 和 macOS 的分阶段目录创建与删除目前尚不可用。包含目录操作的任务会在执行任何任务操作
 前被拒绝。此预览版不代表各平台功能完全一致。

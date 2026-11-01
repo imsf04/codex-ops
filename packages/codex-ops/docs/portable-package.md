@@ -32,7 +32,9 @@ the bridge status after restarting Desktop.
 On Linux and macOS, the installer also prepares `plugin/bin/codex-ops-cli`. To try the launcher, set
 `CODEX_OPS_REAL_CLI` to the native Codex executable whose directory also contains
 `codex-code-mode-host`, then configure the host that starts `app-server` to use that launcher. It
-forwards unvalidated native hosts unchanged and falls back to native output when an HTTP proxy is set.
+enables compression only for the validated Codex CLI 0.165.0-alpha.1 host hashes on Linux x64,
+macOS ARM64 and macOS x64; unvalidated native hosts are forwarded unchanged. It falls back to native
+output when an HTTP proxy is set.
 Desktop-specific activation and additional host versions have not yet been validated.
 
 Staged directory creation/removal are not yet available on Linux and macOS. Tasks containing directory

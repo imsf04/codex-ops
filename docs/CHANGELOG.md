@@ -11,6 +11,8 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - 桥接转发器连接本机原生宿主时绕过 HTTP 代理。
 - Add an opt-in POSIX launcher that owns the relay and app-server lifetimes and falls back to native output.
 - 新增可选的 POSIX 启动器，管理转发器和 app-server 的生命周期，并在不可用时回退到原生输出。
+- Validate pinned Linux x64 and macOS ARM64/x64 native hosts for automatic output projection.
+- 验证固定版本的 Linux x64 和 macOS ARM64/x64 原生宿主，支持自动输出投影。
 - Resolve native worker and kernel executable names for Windows, Linux and macOS.
 - 根据 Windows、Linux 和 macOS 系统选择原生工作进程及内核的可执行文件名。
 - Allow the MCP server to start on non-Windows systems; automatic output bridging and directory task operations remain unavailable there.
