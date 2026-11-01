@@ -32,19 +32,14 @@ class PortableStartupTests(unittest.TestCase):
             (root / 'sample.txt').write_text('portable stdio evidence\n', encoding='utf-8')
             asyncio.run(check(root))
 
-    def test_bridge_and_snapshot_platform_support_is_explicit(self):
+    def test_bridge_platform_support_is_explicit(self):
         import doctor
-        import readonly_snapshot
         import runtime_status
         if os.name != 'nt':
             self.assertFalse(runtime_status.current()['activeForThisProcess'])
             self.assertIn('not available', doctor.report()['nextActions'][0])
-            with self.assertRaisesRegex(OSError, 'not yet available'):
-                with readonly_snapshot.database(Path('unused')):
-                    self.fail('Unsupported snapshot must not execute')
         else:
             self.assertIsNotNone(doctor.control)
-            self.assertTrue(callable(readonly_snapshot._locked_reader))
 
 
 if __name__ == '__main__':

@@ -9,8 +9,8 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - Resolve native worker and kernel executable names for Windows, Linux and macOS.
 - 根据 Windows、Linux 和 macOS 系统选择原生工作进程及内核的可执行文件名。
-- Allow the MCP server to start on non-Windows systems; automatic output bridging and read-only task snapshots remain unavailable there.
-- 支持在非 Windows 系统启动 MCP 服务；自动输出桥接和只读任务快照在这些系统上仍不可用。
+- Allow the MCP server to start on non-Windows systems; automatic output bridging remains unavailable there.
+- 支持在非 Windows 系统启动 MCP 服务；自动输出桥接在这些系统上仍不可用。
 
 - Remove the unused one-shot desktop restart helper and obsolete internal helpers.
 - 移除未使用的一次性桌面重启助手及过时的内部辅助函数。

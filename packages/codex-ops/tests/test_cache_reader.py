@@ -43,8 +43,10 @@ class CacheReaderTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             store = Store(folder)
             ref = store.capture('saved', force=True)['ref']
+            store.db.execute('BEGIN IMMEDIATE')
             with self.assertRaises(ValueError):
                 cache_reader.load(ref, folder)
+            store.db.rollback()
             store.close()
             with patch.object(readonly_snapshot, 'MAX_BYTES', 1), self.assertRaises(ValueError):
                 cache_reader.load(ref, folder)
