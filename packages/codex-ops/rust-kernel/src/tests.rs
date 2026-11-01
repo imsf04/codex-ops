@@ -52,6 +52,8 @@ impl Fixture {
             SERIAL.fetch_add(1, Ordering::Relaxed)
         ));
         fs::create_dir_all(&root).unwrap();
+        #[cfg(unix)]
+        let root = fs::canonicalize(root).unwrap();
         fs::write(
             root.join("source.py"),
             "CAP = 17\n\ndef cap(value):\n    return min(value, CAP)\n",

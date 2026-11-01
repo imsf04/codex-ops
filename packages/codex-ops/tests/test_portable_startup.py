@@ -28,7 +28,7 @@ class PortableStartupTests(unittest.TestCase):
                     self.assertIn('portable stdio evidence', str(result))
 
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             (root / 'sample.txt').write_text('portable stdio evidence\n', encoding='utf-8')
             asyncio.run(check(root))
 
