@@ -112,7 +112,14 @@ def main(output, archive=None):
                 verify_relay(relocated / 'plugin', host, root, env)
             home = root / 'codex-home'
             home.mkdir()
-            env['CODEX_HOME'] = str(home)
+            # Codex can start a background curated-marketplace clone even during
+            # plugin installation. Redirect that unrelated Git fetch in every
+            # isolated Codex invocation, so its child cannot outlive the test home.
+            offline_git = {'GIT_CONFIG_COUNT': '1',
+                           'GIT_CONFIG_KEY_0': 'url.http://127.0.0.1:1/.insteadOf',
+                           'GIT_CONFIG_VALUE_0': 'https://github.com/openai/plugins.git',
+                           'GIT_TERMINAL_PROMPT': '0'}
+            env.update({'CODEX_HOME': str(home), **offline_git})
             subprocess.run([str(codex), 'plugin', 'marketplace', 'add', str(relocated), '--json'],
                            env=env, check=True, capture_output=True, text=True)
             installed = subprocess.run([str(codex), 'plugin', 'add', 'codex-ops@codex-ops-portable', '--json'],
@@ -121,12 +128,7 @@ def main(output, archive=None):
             asyncio.run(verify(cached, workspace, env))
             probe_env = {key: value for key, value in host_env.items()
                          if key.lower() not in ('http_proxy', 'https_proxy', 'all_proxy')}
-            # The host also starts a background curated-marketplace clone. Keep this
-            # isolated test offline so that child cannot outlive the temporary home.
-            probe_env.update({'GIT_CONFIG_COUNT': '1',
-                              'GIT_CONFIG_KEY_0': 'url.http://127.0.0.1:1/.insteadOf',
-                              'GIT_CONFIG_VALUE_0': 'https://github.com/openai/plugins.git',
-                              'GIT_TERMINAL_PROMPT': '0'})
+            probe_env.update(offline_git)
             subprocess.run([sys.executable, str(ROOT / 'tests/probe_app_server.py'),
                             '--case', 'text', '--compress', '--require-pass', '--installed-home', str(home)],
                            cwd=ROOT, env=probe_env, check=True, timeout=90)
