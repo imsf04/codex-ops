@@ -37,5 +37,7 @@ macOS ARM64 and macOS x64; unvalidated native hosts are forwarded unchanged. It 
 output when an HTTP proxy is set.
 Desktop-specific activation and additional host versions have not yet been validated.
 
-Staged directory creation/removal are not yet available on Linux and macOS. Tasks containing directory
-steps are rejected before any task effects. This preview does not claim complete platform parity.
+Linux and macOS directory tasks authorize the opened directory identity. Each ancestor is opened
+without following symlinks, and creation/removal uses the parent descriptor. External renames may
+move that authorized directory; effects still apply to it, never to a replacement symlink target.
+Windows instead prevents parent renames while the directory operation runs. See [task contracts](tasks.md).

@@ -12,7 +12,7 @@ Version **0.8.0 is experimental**. Functional validation and cost results are se
 historical cost targets remain unmet. Passing functionality does not establish token savings.
 
 Portable packages are under acceptance in PR #8 for Windows x64, Linux x64, macOS ARM64,
-and macOS x64. POSIX directory tasks remain incomplete; host and proxy limitations of the
+and macOS x64. POSIX directory tasks use directory identity authorization; host and proxy limitations of the
 output bridge are documented in the [installation guide](packages/codex-ops/docs/portable-package.md).
 Download the matching Actions preview artifact and follow that guide to install and register
 the plugin. Preview artifacts are not stable releases.

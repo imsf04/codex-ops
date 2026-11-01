@@ -30,7 +30,7 @@ uv run --locked python -m unittest discover -s tests
 Integration tests require the native Codex CLI/host pinned by CI. The workflow prepares
 those fixtures and tests extracted packages in an isolated Codex home. Follow
 `.github/workflows/ci.yml` for the complete four-platform procedure. Report passes, failures
-and platform-specific skips separately. POSIX directory failures currently block acceptance.
+and platform-specific skips separately. Directory mutation tests must pass on every platform.
 
 For WSL, set `UV_PROJECT_ENVIRONMENT` outside this checkout so Linux uv does not replace
 the Windows virtual environment. Preserve existing user installations when testing.

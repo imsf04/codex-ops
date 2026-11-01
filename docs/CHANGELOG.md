@@ -7,6 +7,9 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+- Implement POSIX staged directory creation/removal using approved opened-directory identity authority; test parent replacement, symlink refusal and rollback.
+- 按批准的目录身份授权实现 POSIX 分阶段目录创建与删除，验证父路径替换、符号链接拒绝和回滚。
+
 - Make Codex Ops the standalone repository product; retain native dependencies, licenses and Git history, replace the DSH entry docs and CI.
 - 仓库独立为 Codex Ops；保留必要原生依赖、许可证和 Git 历史，更新 DSH 遗留入口文档及 CI。
 

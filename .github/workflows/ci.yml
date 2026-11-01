@@ -32,14 +32,9 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: '24'
-      - name: Use a canonical Windows temporary directory
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $testTemp = Join-Path $env:GITHUB_WORKSPACE 'ci-test-temp'
-          New-Item -ItemType Directory -Force $testTemp | Out-Null
-          "TEMP=$testTemp" >> $env:GITHUB_ENV
-          "TMP=$testTemp" >> $env:GITHUB_ENV
+      - name: Use a canonical temporary directory
+        run: >-
+          python -c "import os,pathlib; p=(pathlib.Path(os.environ['GITHUB_WORKSPACE'])/'ci-test-temp').resolve(); p.mkdir(exist_ok=True); f=open(os.environ['GITHUB_ENV'],'a'); f.write(''.join(k+'='+str(p)+'\n' for k in ('TEMP','TMP','TMPDIR'))); f.close()"
       - name: Install locked dependencies
         run: |
           python -m pip install uv==0.11.32

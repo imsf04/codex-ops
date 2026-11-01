@@ -15,8 +15,9 @@ The current plugin's contracts are in [its README](packages/codex-ops/README.md)
 - Native/model output and Code Mode program values are distinct projections. Compression
   must preserve exact raw recovery, program values, errors, media and execution state.
 - Preserve path authority, permission checks, revision checks, paging and completeness.
-  POSIX directory mutations remain unsupported until the authority contract is implemented
-  and adversarial rename/reparse tests pass. Do not turn these failures into skips.
+  POSIX directory operations use opened-directory identity authorization: external renames
+  preserve authority over that directory, while symlink replacement must not redirect effects.
+  Windows retains parent rename exclusion. Test both contracts without hiding failures.
 
 ## Changes and verification
 

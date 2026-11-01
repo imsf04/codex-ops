@@ -41,33 +41,30 @@ class PortableStartupTests(unittest.TestCase):
         else:
             self.assertIsNotNone(doctor.control)
 
-    def test_directory_tasks_never_silently_bypass_platform_boundary(self):
+    def test_directory_primitives_create_and_remove_on_this_platform(self):
         from mutations import task_directories
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()
-            if os.name != 'nt':
-                with self.assertRaisesRegex(OSError, 'not yet available'):
-                    task_directories.execute(root, 'child', True)
-                self.assertFalse((root / 'child').exists())
-            else:
-                task_directories.execute(root, 'child', True)
-                self.assertTrue((root / 'child').is_dir())
+            task_directories.execute(root, 'child', True)
+            self.assertTrue((root / 'child').is_dir())
+            task_directories.execute(root, 'child', False)
+            self.assertFalse((root / 'child').exists())
 
-    def test_task_preflight_does_not_partially_apply_unsupported_directories(self):
+    def test_mixed_file_directory_task_completes_and_rolls_back(self):
         import task_api
         from mutations import task_engine
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()
             plan = task_api.plan(str(root), [[{'operation': 'write', 'args': {'path': 'a', 'content': 'value'}}],
                                              [{'operation': 'mkdir', 'args': {'path': 'child'}}]])
-            if os.name == 'nt':
-                self.assertEqual(task_engine.apply(plan)['status'], 'completed')
-                self.assertTrue((root / 'child').is_dir())
-            else:
-                with self.assertRaisesRegex(ValueError, 'Secure directory task operations'):
-                    task_engine.apply(plan)
-                self.assertFalse((root / 'a').exists())
-                self.assertFalse((root / '.codex-ops-tasks').exists())
+            receipt = task_engine.apply(plan)
+            self.assertEqual(receipt['status'], 'completed')
+            self.assertEqual((root / 'a').read_text(), 'value')
+            self.assertTrue((root / 'child').is_dir())
+            rolled_back = task_engine.rollback(str(root), receipt['taskId'])
+            self.assertTrue(rolled_back['rollbackComplete'])
+            self.assertFalse((root / 'a').exists())
+            self.assertFalse((root / 'child').exists())
 
 
 if __name__ == '__main__':
