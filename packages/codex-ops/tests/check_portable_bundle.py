@@ -117,7 +117,7 @@ def main(output, archive=None):
             # isolated Codex invocation, so its child cannot outlive the test home.
             offline_git = {'GIT_CONFIG_COUNT': '1',
                            'GIT_CONFIG_KEY_0': 'url.http://127.0.0.1:1/.insteadOf',
-                           'GIT_CONFIG_VALUE_0': 'https://github.com/openai/plugins.git',
+                           'GIT_CONFIG_VALUE_0': 'https://github.com/openai/plugins',
                            'GIT_TERMINAL_PROMPT': '0'}
             env.update({'CODEX_HOME': str(home), **offline_git})
             subprocess.run([str(codex), 'plugin', 'marketplace', 'add', str(relocated), '--json'],
