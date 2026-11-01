@@ -25,5 +25,12 @@ $env:CODEX_OPS_BRIDGE_PYTHON = (Resolve-Path ./plugin/.venv/Scripts/python.exe).
 ```
 
 同版本的已有运行时不会被覆盖；内容不一致时暂存操作会报错。重启桌面程序后再检查桥接状态。
-Linux 和 macOS 的自动输出桥接、分阶段目录创建与删除目前尚不可用。包含目录操作的任务会在
-执行任何任务操作前被拒绝。此预览版不代表各平台功能完全一致。
+
+Linux 和 macOS 安装程序还会准备 `plugin/bin/codex-ops-cli`。如需试用，将
+`CODEX_OPS_REAL_CLI` 设置为原生 Codex 可执行文件；同一目录必须包含
+`codex-code-mode-host`，然后将启动 `app-server` 的宿主配置为使用该启动器。未验证的原生宿主
+输出会原样转发；设置了 HTTP 代理时会回退到原生输出。桌面程序专用启用方式及更多宿主版本
+尚未验证。
+
+Linux 和 macOS 的分阶段目录创建与删除目前尚不可用。包含目录操作的任务会在执行任何任务操作
+前被拒绝。此预览版不代表各平台功能完全一致。

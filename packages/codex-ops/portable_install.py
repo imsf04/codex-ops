@@ -22,6 +22,13 @@ def configure(root, python):
         command = '& ' + quote(python) + ' ' + quote(hook)
     else:
         command = shlex.quote(str(python)) + ' ' + shlex.quote(str(hook))
+        launcher = root / 'runtime_bridge/launcher_posix.py'
+        if not launcher.is_file():
+            raise ValueError('The POSIX bridge launcher is missing')
+        entry = root / 'bin/codex-ops-cli'
+        entry.write_text('#!/bin/sh\nexec ' + shlex.quote(str(python)) + ' ' +
+                         shlex.quote(str(launcher)) + ' "$@"\n', encoding='utf-8')
+        entry.chmod(0o755)
     hooks_path = root / 'hooks' / 'hooks.json'
     hooks = json.loads(hooks_path.read_text(encoding='utf-8'))
     for groups in hooks['hooks'].values():

@@ -9,6 +9,8 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - Bypass HTTP proxies for the relay's loopback connection to its native host.
 - 桥接转发器连接本机原生宿主时绕过 HTTP 代理。
+- Add an opt-in POSIX launcher that owns the relay and app-server lifetimes and falls back to native output.
+- 新增可选的 POSIX 启动器，管理转发器和 app-server 的生命周期，并在不可用时回退到原生输出。
 - Resolve native worker and kernel executable names for Windows, Linux and macOS.
 - 根据 Windows、Linux 和 macOS 系统选择原生工作进程及内核的可执行文件名。
 - Allow the MCP server to start on non-Windows systems; automatic output bridging and directory task operations remain unavailable there.

@@ -78,12 +78,14 @@ def main():
     parser.add_argument('--compress', action='store_true')
     parser.add_argument('--require-pass', action='store_true', help='Fail unless the text projection probe succeeds')
     parser.add_argument('--shim', action='store_true')
+    parser.add_argument('--allow-unvalidated-shim', action='store_true')
     parser.add_argument('--shim-path', type=Path)
     parser.add_argument('--production-status', action='store_true')
     parser.add_argument('--coverage', action='store_true', help='Use instrumented test-only Python entrypoints')
     parser.add_argument('--sandbox-workspace', type=Path)
     parser.add_argument('--shared-home', type=Path, help='Use existing official sandbox state; configure this process without writing its config or auth')
     parser.add_argument('--installed-home', type=Path, help='Exercise and approve installed hooks in an isolated test home')
+    parser.add_argument('--fixture-python', type=Path, help='Python interpreter for isolated MCP fixture')
     args = parser.parse_args()
     if args.installed_home:
         args.installed_home = args.installed_home.resolve()
@@ -240,7 +242,7 @@ shell_snapshot = false
         config = config.replace('sandbox_mode = "read-only"', 'sandbox_mode = "workspace-write"')
         config += '\n[windows]\nsandbox = "elevated"\n'
     if args.case == 'mcp':
-        python = mcp_python()
+        python = args.fixture_python or mcp_python()
         fixture = Path(__file__).with_name('probe_mcp.py').resolve()
         config += f"\n[mcp_servers.probe]\ncommand = '{python}'\nargs = ['-u','{fixture}']\nrequired = true\n"
     if args.case in ('runtime_status', 'retrieval', 'native_scope', 'workflow_native', 'workflow_delivery', 'v070', 'v080'):
@@ -338,7 +340,7 @@ shell_snapshot = false
                     if bridge_status['counters']['outboundFrames'] >= 4:
                         break
                 time.sleep(0.1)
-            assert bridge_status and bridge_status['compressionEnabled'], bridge_status
+            assert bridge_status and bridge_status['compressionEnabled'] != args.allow_unvalidated_shim, bridge_status
             (root / 'shim-bridge-status.json').write_text(json.dumps(bridge_status, indent=2), encoding='utf-8')
     finally:
         process.terminate()
@@ -410,9 +412,22 @@ shell_snapshot = false
     (root / 'report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
     print(json.dumps(report))
     if args.require_pass:
-        assert args.case == 'text' and args.compress, 'Required probe expects compressed text case'
-        assert report['rawIntact'] and report['inboundUnchanged'], 'Native payload changed or failed'
-        assert report['frames'] and report['relay']['compactedFrames'] > 0, 'No projected output observed'
+        expected = {'text': report['rawIntact'], 'yield': report['rawIntact'], 'mcp': report['rawIntact'],
+                    'error': report['expectedError'], 'media': report['rawIntact'] and report['imagePresent'],
+                    'tool_error': report['rawIntact'] and report['toolErrorPreserved']}
+        assert args.case in expected and (args.compress or args.allow_unvalidated_shim), 'Invalid required probe'
+        assert expected[args.case] and not report['rawChanged'], 'Native payload changed or failed'
+        if args.allow_unvalidated_shim:
+            assert args.shim and report['relay']['outboundFrames'] > 0 and report['relay']['compactedFrames'] == 0
+        elif args.shim:
+            assert report['relay']['outboundFrames'] > 0
+            if args.case in ('text', 'yield', 'mcp'):
+                assert report['relay']['compactedFrames'] > 0
+        else:
+            assert report['inboundUnchanged'], 'Inbound payload changed'
+            assert report['frames'], 'No native frames observed'
+            if args.case in ('text', 'yield', 'mcp'):
+                assert report['relay']['compactedFrames'] > 0, 'No projected output observed'
         if args.installed_home:
             completed = [event['params']['run'] for event in events if event.get('method') == 'hook/completed']
             assert any(run['eventName'] == 'sessionStart' and run['source'] == 'plugin' and

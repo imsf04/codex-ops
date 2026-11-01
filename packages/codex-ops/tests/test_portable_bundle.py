@@ -45,6 +45,7 @@ while not pathlib.Path(sys.argv[2]).exists():
                 (source / name).write_text('fixture', encoding='utf-8')
             (source / 'hooks/hooks.json').write_text(json.dumps({'hooks': {'SessionStart': [
                 {'hooks': [{'type': 'command', 'command': 'old machine path'}]}]}}), encoding='utf-8')
+            (source / 'runtime_bridge/launcher_posix.py').write_text('fixture', encoding='utf-8')
             for name in ('portable-package.md', 'portable-package.zh-CN.md'):
                 (source / 'docs' / name).write_text('installation instructions', encoding='utf-8')
             suffix = '.exe' if os.name == 'nt' else ''
@@ -74,6 +75,11 @@ while not pathlib.Path(sys.argv[2]).exists():
             self.assertIn(str(python.absolute()), hook['command'])
             self.assertIn(str((plugin / 'hook.py').resolve()), hook['command'])
             self.assertNotIn('old machine path', hook['command'])
+            if os.name != 'nt':
+                launcher = plugin / 'bin/codex-ops-cli'
+                self.assertTrue(os.access(launcher, os.X_OK))
+                self.assertIn(str(python.absolute()), launcher.read_text(encoding='utf-8'))
+                self.assertIn(str(plugin / 'runtime_bridge/launcher_posix.py'), launcher.read_text(encoding='utf-8'))
             index = json.loads((bundle / '.agents/plugins/marketplace.json').read_text())
             self.assertEqual(index['plugins'][0]['source']['path'], './plugin')
             with self.assertRaisesRegex(ValueError, 'already exists'):
