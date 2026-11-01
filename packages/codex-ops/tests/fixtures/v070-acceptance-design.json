@@ -1,0 +1,56 @@
+{
+  "version": "0.7.0",
+  "status": "design-frozen-before-implementation",
+  "baseline": "0.6.1",
+  "purpose": "Natural evidence use and complete-task cost; no forced tool selection",
+  "comparisons": {
+    "families": 12,
+    "repeatsPerArm": 3,
+    "arms": 2,
+    "model": "Same explicit model and effort in both arms; pin before paid execution",
+    "ordering": "paired interleaved",
+    "instructions": "Same user task and task constraints; each arm's actual shipped routing/skill is part of treatment; never instruct task to call a named ops tool",
+    "failedAttempts": "Retain all errors, retries and timeouts; no replacement runs"
+  },
+  "families": [
+    "symbol-definition-and-callers",
+    "configuration-precedence-with-distractor",
+    "chinese-question-with-and-without-code-anchor",
+    "medium-source-output-exact-recovery",
+    "multi-document-contradictory-evidence",
+    "late-log-error-coverage",
+    "multi-reference-relevance-and-batch",
+    "changed-source-index-invalidation",
+    "native-test-failure-to-source",
+    "long-task-terminal-and-access-denied",
+    "resume-with-changed-source",
+    "multi-agent-cost-and-opportunity-attribution"
+  ],
+  "hardGates": [
+    "All deterministic protocol/original-value/permission/coverage regression tests pass",
+    "Every production Python function CRAP <= 6; unchanged Rust outside Python score explicitly noted",
+    "No failed task regraded by changing oracle after seeing outcomes",
+    "Candidate strict success count no lower than baseline; investigate every baseline-success/candidate-failure pair before release",
+    "No index or reference grants source permission; no read-only MCP command execution"
+  ],
+  "targets": {
+    "matchedSuccessActionsReduction": 0.25,
+    "matchedSuccessInputTokensReduction": 0.2,
+    "uncachedInputChangeMax": 0,
+    "presentationInducedImmediateRetrievalReduction": 0.5
+  },
+  "metrics": [
+    "all-attempt totals",
+    "common-success pairs",
+    "paired median and per-family distribution",
+    "outer exec and native actions separately",
+    "input/cached-input/uncached-input/output tokens",
+    "model rounds",
+    "p50/p95 elapsed time",
+    "immediate display-induced retrieval with reason",
+    "eligible/selected/completed/fallback workflow opportunities",
+    "raw exact retrieval and source correctness"
+  ],
+  "releaseRule": "Report each target PASS/FAIL/UNKNOWN under frozen definitions. A missed target cannot silently become a pass. Keep failed cost target candidates experimental until redesigned or the user explicitly changes release objectives.",
+  "adoptionRule": "Do not divide workflow calls by every tool call. Label task opportunities and audit labels; exclude plugin development and descendant agents from daily-work cohort."
+}
