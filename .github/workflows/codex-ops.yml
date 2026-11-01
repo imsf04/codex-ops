@@ -46,6 +46,13 @@ jobs:
           New-Item -ItemType Directory -Force packages/codex-ops/bin | Out-Null
           Copy-Item native/target/release/dsh-ops-worker.exe packages/codex-ops/bin/
           Copy-Item packages/codex-ops/rust-kernel/target/release/codex-ops-kernel.exe packages/codex-ops/bin/
+          rustc --edition 2024 -O packages/codex-ops/runtime_bridge/shim.rs -o packages/codex-ops/bin/codex-ops-cli.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prepare frozen test design
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force packages/codex-ops/verification | Out-Null
+          Copy-Item packages/codex-ops/tests/fixtures/v070-acceptance-design.json packages/codex-ops/verification/
       - name: Run Python tests
         working-directory: packages/codex-ops
         run: uv run --locked python -m unittest discover -s tests -p 'test_*.py'
