@@ -28,6 +28,22 @@ async def verify(plugin, root, env):
     process = subprocess.run(shell, input=json.dumps({'hook_event_name': 'SessionStart'}),
                              text=True, capture_output=True, env=env, check=True)
     assert 'hookSpecificOutput' in json.loads(process.stdout), process.stdout
+    task_probe = '''import sys
+from pathlib import Path
+import task_api
+from mutations import task_engine
+root = Path(sys.argv[1])
+plan = task_api.plan(str(root), [[{'operation': 'mkdir', 'args': {'path': 'installed-task'}}],
+    [{'operation': 'write', 'args': {'path': 'installed-task/value', 'content': 'installed'}}]])
+receipt = task_engine.apply(plan)
+assert receipt['status'] == 'completed', receipt
+assert (root / 'installed-task/value').read_text() == 'installed'
+rollback = task_engine.rollback(str(root), receipt['taskId'])
+assert rollback['rollbackComplete'], rollback
+assert not (root / 'installed-task').exists()
+print('Installed directory task and rollback passed')
+'''
+    subprocess.run([spec['command'], '-c', task_probe, str(root)], cwd=plugin, env=env, check=True, timeout=30)
 
 
 if __name__ == '__main__':

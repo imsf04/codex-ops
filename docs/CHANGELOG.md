@@ -7,6 +7,9 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+- Validate the packaged Windows launcher against the pinned native host; exercise seven bridge scenarios and installed directory task rollback on all four platforms. POSIX diagnostics now report actual attached bridge status.
+- 验证 Windows 打包启动器与固定原生宿主；四平台验收七种桥接场景和安装后的目录任务回滚。POSIX 诊断现按实际桥接状态报告。
+
 - Implement POSIX staged directory creation/removal using approved opened-directory identity authority; test parent replacement, symlink refusal and rollback.
 - 按批准的目录身份授权实现 POSIX 分阶段目录创建与删除，验证父路径替换、符号链接拒绝和回滚。
 

@@ -110,33 +110,41 @@ def main(output, archive=None):
             host_env = {**env, 'PATH': str(root) + os.pathsep + env.get('PATH', '')}
             owned_process.run([sys.executable, '-m', 'unittest', 'discover', '-s', str(ROOT / 'tests'),
                                '-p', 'test_v06_workflow_sdk.py'], cwd=ROOT, env=host_env, check=True)
-            if os.name != 'nt':
-                shim_env = {key: value for key, value in host_env.items()
-                            if key.lower() not in ('http_proxy', 'https_proxy', 'all_proxy')}
-                shim_env['CODEX_OPS_REAL_CLI'] = str(codex)
-                manifest = relocated / 'plugin/runtime_bridge/validated-host.json'
-                original = manifest.read_bytes()
-                try:
-                    allowlist = json.loads(original)
-                    digest = hashlib.sha256(host.read_bytes()).hexdigest()
-                    manifest.write_text(json.dumps({**allowlist, 'sha256': []}), encoding='utf-8')
+            shim_env = {key: value for key, value in host_env.items()
+                        if key.lower() not in ('http_proxy', 'https_proxy', 'all_proxy')}
+            shim_env['CODEX_OPS_REAL_CLI'] = str(codex)
+            suffix = '.exe' if os.name == 'nt' else ''
+            launcher = relocated / 'plugin/bin' / ('codex-ops-cli' + suffix)
+            installed_python = relocated / 'plugin/.venv' / ('Scripts/python.exe' if os.name == 'nt' else 'bin/python')
+            if os.name == 'nt':
+                for name, value in {'real-cli.txt': codex, 'bridge-python.txt': installed_python,
+                                    'bridge-script.txt': relocated / 'plugin/runtime_bridge/manager.py'}.items():
+                    (launcher.parent / name).write_text(str(value), encoding='utf-8')
+            manifest = relocated / 'plugin/runtime_bridge/validated-host.json'
+            original = manifest.read_bytes()
+            try:
+                allowlist = json.loads(original)
+                digest = hashlib.sha256(host.read_bytes()).hexdigest()
+                manifest.write_text(json.dumps({**allowlist, 'sha256': []}), encoding='utf-8')
+                if os.name != 'nt':
                     verify_relay(relocated / 'plugin', host, root, env)
+                owned_process.run([sys.executable, str(ROOT / 'tests/probe_app_server.py'),
+                                   '--case', 'text', '--shim', '--allow-unvalidated-shim', '--require-pass',
+                                   '--shim-path', str(launcher)],
+                                  cwd=ROOT, env=shim_env, check=True, timeout=90)
+                if digest not in allowlist['sha256']:
+                    raise AssertionError(f'Native host SHA-256 is not in the packaged allowlist: {digest}')
+                manifest.write_bytes(original)
+                for case in ('text', 'yield', 'error', 'media', 'tool_error', 'mcp', 'runtime_status'):
                     owned_process.run([sys.executable, str(ROOT / 'tests/probe_app_server.py'),
-                                       '--case', 'text', '--shim', '--allow-unvalidated-shim', '--require-pass',
-                                       '--shim-path', str(relocated / 'plugin/bin/codex-ops-cli')],
+                                       '--case', case, '--shim', '--compress', '--require-pass',
+                                       '--fixture-python', str(installed_python),
+                                       '--plugin-root', str(relocated / 'plugin'),
+                                       '--shim-path', str(launcher)],
                                       cwd=ROOT, env=shim_env, check=True, timeout=90)
-                    if digest not in allowlist['sha256']:
-                        raise AssertionError(f'Native host SHA-256 is not in the packaged allowlist: {digest}')
-                    manifest.write_bytes(original)
-                    for case in ('text', 'yield', 'error', 'media', 'tool_error', 'mcp'):
-                        owned_process.run([sys.executable, str(ROOT / 'tests/probe_app_server.py'),
-                                           '--case', case, '--shim', '--compress', '--require-pass',
-                                           '--fixture-python', sys.executable,
-                                           '--shim-path', str(relocated / 'plugin/bin/codex-ops-cli')],
-                                          cwd=ROOT, env=shim_env, check=True, timeout=90)
-                    print('Validated isolated native host SHA-256:', digest)
-                finally:
-                    manifest.write_bytes(original)
+                print('Validated isolated native host SHA-256:', digest)
+            finally:
+                manifest.write_bytes(original)
             home = root / 'codex-home'
             home.mkdir()
             # Codex can start a background curated-marketplace clone even during

@@ -17,6 +17,8 @@ jobs:
     name: Codex Ops dependencies (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
+    env:
+      PYTHONUTF8: '1'
     strategy:
       fail-fast: false
       matrix:

@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
@@ -37,7 +38,13 @@ class PortableStartupTests(unittest.TestCase):
         import runtime_status
         if os.name != 'nt':
             self.assertFalse(runtime_status.current()['activeForThisProcess'])
-            self.assertIn('not available', doctor.report()['nextActions'][0])
+            self.assertIn('bin/codex-ops-cli', doctor.report()['nextActions'][0])
+            with patch.object(runtime_status, 'current', return_value={
+                    'activeForThisProcess': True, 'runtimeVersion': '0.8.0'}):
+                report = doctor.report()
+                self.assertTrue(report['activeForThisProcess'])
+                self.assertEqual(report['activeRuntimeVersion'], '0.8.0')
+                self.assertEqual(report['nextActions'], [])
         else:
             self.assertIsNotNone(doctor.control)
 

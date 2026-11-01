@@ -35,7 +35,21 @@ On Linux and macOS, the installer also prepares `plugin/bin/codex-ops-cli`. To t
 enables compression only for the validated Codex CLI 0.165.0-alpha.1 host hashes on Linux x64,
 macOS ARM64 and macOS x64; unvalidated native hosts are forwarded unchanged. It falls back to native
 output when an HTTP proxy is set.
-Desktop-specific activation and additional host versions have not yet been validated.
+For a direct app-server session, run:
+
+```sh
+CODEX_OPS_REAL_CLI=/absolute/path/to/codex ./plugin/bin/codex-ops-cli app-server --stdio
+```
+
+For a host that honors `CODEX_CLI_PATH`, set it to the absolute path of this launcher in that
+host's launch environment and set `CODEX_OPS_REAL_CLI` there too. Fully restart the host so it
+inherits the settings. `ops_stats` reports whether the bridge is attached to the current process.
+Desktop GUI activation and additional host versions have not been validated by headless CI.
+
+CI installs the relocated package in an isolated Codex home, trusts and executes its hook through
+the real host, and checks text, asynchronous output, errors, images, tool errors, MCP values and
+attached runtime status through the packaged launcher. It also runs installed directory tasks and
+rollback, the full Python suite and Rust tests. Platform-only skips are reported separately.
 
 Linux and macOS directory tasks authorize the opened directory identity. Each ancestor is opened
 without following symlinks, and creation/removal uses the parent descriptor. External renames may

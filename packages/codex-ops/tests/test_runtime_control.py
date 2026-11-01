@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import tempfile
+import sys
 import unittest
 from unittest.mock import patch
 
@@ -15,6 +16,11 @@ if os.name == 'nt':
 
 @unittest.skipUnless(os.name == 'nt', 'Windows registry and Desktop control')
 class ControlTests(unittest.TestCase):
+    def setUp(self):
+        python = patch.dict(os.environ, {'CODEX_OPS_BRIDGE_PYTHON': sys.executable})
+        python.start()
+        self.addCleanup(python.stop)
+
     def test_runtime_settings_accept_explicit_installed_python(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

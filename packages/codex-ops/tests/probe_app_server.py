@@ -86,6 +86,7 @@ def main():
     parser.add_argument('--shared-home', type=Path, help='Use existing official sandbox state; configure this process without writing its config or auth')
     parser.add_argument('--installed-home', type=Path, help='Exercise and approve installed hooks in an isolated test home')
     parser.add_argument('--fixture-python', type=Path, help='Python interpreter for isolated MCP fixture')
+    parser.add_argument('--plugin-root', type=Path, help='Relocated plugin source for runtime acceptance')
     args = parser.parse_args()
     if args.installed_home:
         args.installed_home = args.installed_home.resolve()
@@ -246,8 +247,8 @@ shell_snapshot = false
         fixture = Path(__file__).with_name('probe_mcp.py').resolve()
         config += f"\n[mcp_servers.probe]\ncommand = '{python}'\nargs = ['-u','{fixture}']\nrequired = true\n"
     if args.case in ('runtime_status', 'retrieval', 'native_scope', 'workflow_native', 'workflow_delivery', 'v070', 'v080'):
-        python = mcp_python()
-        entry = Path(__file__).resolve().parents[1] / 'server.py'
+        python = args.fixture_python or mcp_python()
+        entry = (args.plugin_root or Path(__file__).resolve().parents[1]) / 'server.py'
         if args.coverage:
             python, entry = Path(sys.executable), instrument(root, entry)
         config += f"\n[mcp_servers.codex_ops]\ncommand = '{python}'\nargs = ['-u','{entry}']\nrequired = true\n"
@@ -414,7 +415,8 @@ shell_snapshot = false
     if args.require_pass:
         expected = {'text': report['rawIntact'], 'yield': report['rawIntact'], 'mcp': report['rawIntact'],
                     'error': report['expectedError'], 'media': report['rawIntact'] and report['imagePresent'],
-                    'tool_error': report['rawIntact'] and report['toolErrorPreserved']}
+                    'tool_error': report['rawIntact'] and report['toolErrorPreserved'],
+                    'runtime_status': report['rawIntact']}
         assert args.case in expected and (args.compress or args.allow_unvalidated_shim), 'Invalid required probe'
         assert expected[args.case] and not report['rawChanged'], 'Native payload changed or failed'
         if args.allow_unvalidated_shim:
