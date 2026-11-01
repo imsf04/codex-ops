@@ -29,6 +29,9 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.14'
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
       - name: Install locked dependencies
         run: |
           python -m pip install uv==0.11.32
@@ -57,6 +60,9 @@ jobs:
       - name: Stage native components
         run: >-
           python -c "import os, pathlib, shutil; ext = '.exe' if os.name == 'nt' else ''; dest = pathlib.Path('bin'); dest.mkdir(exist_ok=True); shutil.copy2(pathlib.Path('../../native/target/release') / ('dsh-ops-worker' + ext), dest); shutil.copy2(pathlib.Path('rust-kernel/target/release') / ('codex-ops-kernel' + ext), dest)"
+      - name: Build Windows launcher
+        if: runner.os == 'Windows'
+        run: rustc --edition 2024 -O runtime_bridge/shim.rs -o bin/codex-ops-cli.exe
       - name: Exercise native worker and kernel
         run: uv run --locked --no-dev python -m unittest discover -s tests -p test_portable_native.py
       - name: Exercise MCP stdio server
@@ -65,8 +71,20 @@ jobs:
         run: uv run --locked --no-dev python -m unittest discover -s tests -p test_cache_reader.py
       - name: Check bundle assembly
         run: uv run --locked --no-dev python -m unittest discover -s tests -p test_portable_bundle.py
+      - name: Fetch pinned Codex CLI for isolated installation
+        shell: bash
+        run: |
+          case "${{ runner.os }}-${{ runner.arch }}" in
+            Windows-X64) target=win32-x64 ;;
+            Linux-X64) target=linux-x64 ;;
+            macOS-ARM64) target=darwin-arm64 ;;
+            macOS-X64) target=darwin-x64 ;;
+            *) exit 1 ;;
+          esac
+          npm pack "@openai/codex@0.165.0-alpha.1-${target}" --pack-destination "$RUNNER_TEMP" --silent
       - name: Build and verify relocated preview bundle
-        run: uv run --locked --no-dev python tests/check_portable_bundle.py "${{ runner.temp }}/codex-ops-preview"
+        shell: bash
+        run: uv run --locked --no-dev python tests/check_portable_bundle.py "$RUNNER_TEMP/codex-ops-preview" "$RUNNER_TEMP"
       - uses: actions/upload-artifact@v7
         with:
           name: codex-ops-preview-${{ matrix.os }}
