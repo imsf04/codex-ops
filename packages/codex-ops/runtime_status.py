@@ -91,6 +91,8 @@ def _describe_status(value):
 
 
 def current():
+    if os.name != 'nt':
+        return {**_INACTIVE, 'reason': 'Automatic output bridge is not available on this platform'}
     root = Path(os.environ.get('CODEX_OPS_BRIDGE_STATUS', str(Path(os.environ.get('LOCALAPPDATA', Path.home())) / 'CodexOps/bridge')))
     try:
         value = _selected_status(root)

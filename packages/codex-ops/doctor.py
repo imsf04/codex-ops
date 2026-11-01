@@ -2,10 +2,14 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 
 import runtime_status
-from runtime_bridge import control
+if os.name == 'nt':
+    from runtime_bridge import control
+else:
+    control = None
 
 
 def _manifest(root):
@@ -44,6 +48,11 @@ def _actions(version, configured, active):
 def report(check_files=False, root=None):
     root = Path(root) if root else Path(__file__).resolve().parent
     version = _manifest(root)
+    if control is None:
+        return {'packageVersion': version, 'configuredVersion': None, 'activeRuntimeVersion': None,
+                'activeForThisProcess': False, 'restartRequired': False,
+                'nextActions': ['Automatic output bridge is not available on this platform.'],
+                'hookTrust': 'Use native hooks/list; file existence alone does not establish trust.'}
     override = control.user_environment()['value']
     configured, active = _configured_version(override), runtime_status.current()
     result = {'packageVersion': version, 'configuredVersion': configured,

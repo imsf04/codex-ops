@@ -47,6 +47,8 @@ jobs:
           python -c "import os, pathlib, shutil; ext = '.exe' if os.name == 'nt' else ''; dest = pathlib.Path('bin'); dest.mkdir(exist_ok=True); shutil.copy2(pathlib.Path('../../native/target/release') / ('dsh-ops-worker' + ext), dest); shutil.copy2(pathlib.Path('rust-kernel/target/release') / ('codex-ops-kernel' + ext), dest)"
       - name: Exercise native worker and kernel
         run: uv run --locked --no-dev python -m unittest discover -s tests -p test_portable_native.py
+      - name: Exercise MCP stdio server
+        run: uv run --locked --no-dev python -m unittest discover -s tests -p test_portable_startup.py
       - uses: actions/upload-artifact@v7
         with:
           name: codex-ops-native-${{ matrix.os }}
