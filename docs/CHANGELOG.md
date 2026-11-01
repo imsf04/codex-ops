@@ -7,6 +7,9 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+- Resolve native worker and kernel executable names for Windows, Linux and macOS.
+- 根据 Windows、Linux 和 macOS 系统选择原生工作进程及内核的可执行文件名。
+
 - Remove the unused one-shot desktop restart helper and obsolete internal helpers.
 - 移除未使用的一次性桌面重启助手及过时的内部辅助函数。
 

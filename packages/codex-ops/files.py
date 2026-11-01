@@ -63,7 +63,8 @@ def _path(entry):
 
 def _invoke_worker(base, operation, args, timeout_seconds=32):
     timeout_seconds = _timeout(timeout_seconds)
-    worker = Path(os.environ.get('CODEX_OPS_WORKER', str(Path(__file__).parent / 'bin/dsh-ops-worker.exe')))
+    name = 'dsh-ops-worker.exe' if os.name == 'nt' else 'dsh-ops-worker'
+    worker = Path(os.environ.get('CODEX_OPS_WORKER', str(Path(__file__).parent / 'bin' / name)))
     envelope = {'version': 1, 'requestId': uuid.uuid4().hex, 'component': 'file',
                 'budget': {'timeoutMs': max(1, min(30000, int((timeout_seconds - 1) * 1000))), 'maxBytes': 131072},
                 'request': {'root': str(base), 'scope': 'codex-ops-read', 'read_only': True,
@@ -75,7 +76,8 @@ def _invoke_worker(base, operation, args, timeout_seconds=32):
 
 
 def _kernel(base, args):
-    worker = Path(os.environ.get('CODEX_OPS_KERNEL', str(Path(__file__).parent / 'bin/codex-ops-kernel.exe')))
+    name = 'codex-ops-kernel.exe' if os.name == 'nt' else 'codex-ops-kernel'
+    worker = Path(os.environ.get('CODEX_OPS_KERNEL', str(Path(__file__).parent / 'bin' / name)))
     envelope = {'version': 1, 'requestId': uuid.uuid4().hex, 'component': 'file',
                 'budget': {'timeoutMs': 30000, 'maxBytes': 131072},
                 'request': {'root': str(base), 'scope': 'codex-ops-read', 'read_only': True,
