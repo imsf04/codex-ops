@@ -1,15 +1,38 @@
 import json
 import os
 from pathlib import Path
+import sys
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
 import portable_install
+import owned_process
 from scripts import build_portable
 
 
 class PortableBundleTests(unittest.TestCase):
+    def test_owned_installation_process_cleans_up_background_children(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            ready, escaped = root / 'ready', root / 'escaped'
+            child = ('from pathlib import Path; import sys,time; '
+                     'Path(sys.argv[1]).touch(); time.sleep(1); Path(sys.argv[2]).touch()')
+            parent = '''import pathlib, subprocess, sys, time
+subprocess.Popen([sys.executable, '-c', *sys.argv[1:]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+deadline = time.monotonic() + 5
+while not pathlib.Path(sys.argv[2]).exists():
+    if time.monotonic() > deadline:
+        raise RuntimeError('child did not start')
+    time.sleep(.01)
+'''
+            owned_process.run([sys.executable, '-c', parent, child, str(ready), str(escaped)],
+                              env=os.environ.copy(), check=True, timeout=10)
+            self.assertTrue(ready.exists())
+            time.sleep(1.2)
+            self.assertFalse(escaped.exists())
+
     def test_bundle_includes_runtime_sources_and_binds_to_extraction_path(self):
         with tempfile.TemporaryDirectory(prefix='codex ops bundle ') as directory:
             root = Path(directory)

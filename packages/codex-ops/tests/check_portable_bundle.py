@@ -11,6 +11,7 @@ import tempfile
 import time
 
 import grpc
+import owned_process
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -96,7 +97,7 @@ def main(output, archive=None):
                if key not in ('CODEX_OPS_WORKER', 'CODEX_OPS_KERNEL', 'UV_PROJECT_ENVIRONMENT')}
         install = (['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(relocated / 'install.ps1')]
                    if os.name == 'nt' else ['sh', str(relocated / 'install.sh')])
-        subprocess.run(install, check=True, env=env)
+        owned_process.run(install, check=True, env=env)
         workspace = root / 'workspace'
         workspace.mkdir()
         (workspace / 'sample.txt').write_text('installed plugin evidence\n', encoding='utf-8')
@@ -106,8 +107,8 @@ def main(output, archive=None):
             codex = native_cli(archive, root)
             host = native_cli(archive, root, 'codex-code-mode-host')
             host_env = {**env, 'PATH': str(root) + os.pathsep + env.get('PATH', '')}
-            subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', str(ROOT / 'tests'),
-                            '-p', 'test_v06_workflow_sdk.py'], cwd=ROOT, env=host_env, check=True)
+            owned_process.run([sys.executable, '-m', 'unittest', 'discover', '-s', str(ROOT / 'tests'),
+                               '-p', 'test_v06_workflow_sdk.py'], cwd=ROOT, env=host_env, check=True)
             if os.name != 'nt':
                 verify_relay(relocated / 'plugin', host, root, env)
             home = root / 'codex-home'
@@ -120,18 +121,18 @@ def main(output, archive=None):
                            'GIT_CONFIG_VALUE_0': 'https://github.com/openai/plugins',
                            'GIT_TERMINAL_PROMPT': '0'}
             env.update({'CODEX_HOME': str(home), **offline_git})
-            subprocess.run([str(codex), 'plugin', 'marketplace', 'add', str(relocated), '--json'],
-                           env=env, check=True, capture_output=True, text=True)
-            installed = subprocess.run([str(codex), 'plugin', 'add', 'codex-ops@codex-ops-portable', '--json'],
-                                       env=env, check=True, capture_output=True, text=True)
+            owned_process.run([str(codex), 'plugin', 'marketplace', 'add', str(relocated), '--json'],
+                              env=env, check=True, capture_output=True, text=True)
+            installed = owned_process.run([str(codex), 'plugin', 'add', 'codex-ops@codex-ops-portable', '--json'],
+                                          env=env, check=True, capture_output=True, text=True)
             cached = Path(json.loads(installed.stdout)['installedPath'])
             asyncio.run(verify(cached, workspace, env))
             probe_env = {key: value for key, value in host_env.items()
                          if key.lower() not in ('http_proxy', 'https_proxy', 'all_proxy')}
             probe_env.update(offline_git)
-            subprocess.run([sys.executable, str(ROOT / 'tests/probe_app_server.py'),
-                            '--case', 'text', '--compress', '--require-pass', '--installed-home', str(home)],
-                           cwd=ROOT, env=probe_env, check=True, timeout=90)
+            owned_process.run([sys.executable, str(ROOT / 'tests/probe_app_server.py'),
+                               '--case', 'text', '--compress', '--require-pass', '--installed-home', str(home)],
+                              cwd=ROOT, env=probe_env, check=True, timeout=90)
             print('Codex installed the plugin in an isolated home and its MCP and hook passed')
     print('Relocated bundle installation, MCP and SessionStart hook passed')
 
