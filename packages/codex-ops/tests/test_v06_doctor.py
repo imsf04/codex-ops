@@ -1,13 +1,16 @@
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
 
 import doctor
-from runtime_bridge import control
+if os.name == 'nt':
+    from runtime_bridge import control
 
 
+@unittest.skipUnless(os.name == 'nt', 'Windows runtime bundle and registry diagnostics')
 class DoctorTests(unittest.TestCase):
     def test_configured_runtime_never_implies_current_chat_activation(self):
         root = Path(__file__).resolve().parents[1]

@@ -7,6 +7,35 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+- Include uv's original MIT and Apache-2.0 license texts in portable artifacts.
+- 便携产物附带 uv 原始 MIT 与 Apache-2.0 许可证文本。
+
+- Validate the packaged Windows launcher against the pinned native host; exercise seven bridge scenarios and installed directory task rollback on all four platforms. POSIX diagnostics now report actual attached bridge status.
+- 验证 Windows 打包启动器与固定原生宿主；四平台验收七种桥接场景和安装后的目录任务回滚。POSIX 诊断现按实际桥接状态报告。
+
+- Implement POSIX staged directory creation/removal using approved opened-directory identity authority; test parent replacement, symlink refusal and rollback.
+- 按批准的目录身份授权实现 POSIX 分阶段目录创建与删除，验证父路径替换、符号链接拒绝和回滚。
+
+- Make Codex Ops the standalone repository product; retain native dependencies, licenses and Git history, replace the DSH entry docs and CI.
+- 仓库独立为 Codex Ops；保留必要原生依赖、许可证和 Git 历史，更新 DSH 遗留入口文档及 CI。
+
+- Bypass HTTP proxies for the relay's loopback connection to its native host.
+- 桥接转发器连接本机原生宿主时绕过 HTTP 代理。
+- Add an opt-in POSIX launcher that owns the relay and app-server lifetimes and falls back to native output.
+- 新增可选的 POSIX 启动器，管理转发器和 app-server 的生命周期，并在不可用时回退到原生输出。
+- Validate pinned Linux x64 and macOS ARM64/x64 native hosts for automatic output projection.
+- 验证固定版本的 Linux x64 和 macOS ARM64/x64 原生宿主，支持自动输出投影。
+- Resolve native worker and kernel executable names for Windows, Linux and macOS.
+- 根据 Windows、Linux 和 macOS 系统选择原生工作进程及内核的可执行文件名。
+- Allow the MCP server to start on non-Windows systems; automatic output bridging and directory task operations remain unavailable there.
+- 支持在非 Windows 系统启动 MCP 服务；自动输出桥接和目录任务操作在这些系统上仍不可用。
+- Add a relocatable installation preview with locally bound MCP and hook commands.
+- 新增可重定位的安装预览包，在安装时绑定本机 MCP 和 hook 命令。
+- Reject unsupported POSIX directory tasks before any staged task effects occur.
+- 在执行任何分阶段任务操作前拒绝 POSIX 上尚不支持的目录任务。
+- Serialize in-process event writes so parallel worker starts are not lost to local SQLite contention.
+- 串行化同一进程内的事件写入，避免并行工作进程启动计数因 SQLite 竞争而丢失。
+
 - Remove the unused one-shot desktop restart helper and obsolete internal helpers.
 - 移除未使用的一次性桌面重启助手及过时的内部辅助函数。
 

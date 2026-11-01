@@ -1,17 +1,19 @@
-"""Copy a quiescent Windows SQLite database under a read-only sharing lock."""
+"""Copy a SQLite database while excluding concurrent writers."""
 from contextlib import contextmanager
 import ctypes
 from ctypes import wintypes
-import msvcrt
 import os
 from pathlib import Path
 import shutil
+import subprocess
+import sys
 import tempfile
 
 MAX_BYTES = 256 * 1024 * 1024
 
 
 def _locked_reader(path):
+    import msvcrt
     kernel = ctypes.WinDLL('kernel32', use_last_error=True)
     open_file = kernel.CreateFileW
     open_file.argtypes = [wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD, wintypes.LPVOID,
@@ -34,6 +36,16 @@ def _copy(stream, target, remaining):
 
 @contextmanager
 def database(path):
+    if os.name != 'nt':
+        with tempfile.TemporaryDirectory(prefix='codex-ops-ref-') as temporary:
+            destination = Path(temporary) / 'observation.sqlite3'
+            helper = Path(__file__).with_name('readonly_snapshot_posix.py')
+            result = subprocess.run([sys.executable, str(helper), str(path), str(destination), str(MAX_BYTES)],
+                                    capture_output=True, text=True)
+            if result.returncode:
+                raise OSError('Read-only SQLite snapshot is unavailable: ' + result.stderr.strip())
+            yield destination
+        return
     # FILE_SHARE_READ permits other readers but rejects existing/new DB writers.
     # SQLite WAL writers also hold a write-capable main database handle.
     with _locked_reader(path) as source, tempfile.TemporaryDirectory(prefix='codex-ops-ref-') as temporary:

@@ -1,3 +1,16 @@
+Codex Ops 0.8.0
+
+The required native worker is derived from dsh-ops under the MIT License.
+The original notices below are preserved for attribution and historical provenance;
+references to former DSH distributions do not describe this standalone plugin package.
+See docs/PROVENANCE.md for the current source boundary.
+
+Portable packages include uv 0.11.32, Copyright (c) 2025 Astral Software Inc.,
+available under MIT or Apache-2.0. Both texts are preserved in licenses/uv/.
+Source and license provenance: https://github.com/astral-sh/uv/tree/0.11.32
+Python and its locked dependencies are downloaded by uv at installation time;
+they retain their upstream distribution metadata and license texts.
+
 dsh-ops
 Copyright (c) 2026 T-Auto and the dsh-ops contributors
 

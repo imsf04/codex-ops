@@ -2,6 +2,7 @@
 import json
 import os
 from pathlib import Path
+import subprocess
 import time
 import ctypes
 from ctypes import wintypes
@@ -11,7 +12,15 @@ _INACTIVE = {'activeForThisProcess': False, 'reason': 'Native host bridge is not
 
 
 def _process_parents():
-    """Windows snapshot adapter; release the handle before walking the lineage."""
+    """Collect parent IDs without retaining process handles."""
+    if os.name != 'nt':
+        try:
+            output = subprocess.run(['/bin/ps', '-axo', 'pid=,ppid='], capture_output=True,
+                                    text=True, check=True, timeout=2).stdout
+            return {int(pid): int(parent) for pid, parent in
+                    (line.split() for line in output.splitlines())}
+        except (OSError, ValueError, subprocess.SubprocessError):
+            return None
     class Entry(ctypes.Structure):
         _fields_ = [('size', wintypes.DWORD), ('usage', wintypes.DWORD), ('pid', wintypes.DWORD),
                     ('heap', ctypes.c_size_t), ('module', wintypes.DWORD), ('threads', wintypes.DWORD),

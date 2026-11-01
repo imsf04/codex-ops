@@ -101,7 +101,8 @@ def _native_cli():
 
 
 def _runtime_settings():
-    python = Path.home() / '.local/share/codex-runtimes/codex-ops-uv/Scripts/python.exe'
+    default_python = Path.home() / '.local/share/codex-runtimes/codex-ops-uv/Scripts/python.exe'
+    python = Path(os.environ.get('CODEX_OPS_BRIDGE_PYTHON', str(default_python)))
     real = _native_cli()
     if not python.is_file() or not real.is_file():
         raise FileNotFoundError('The tested Python runtime and native CLI must exist')

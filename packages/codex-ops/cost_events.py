@@ -17,6 +17,7 @@ CHAT = re.compile(r'chat:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}\Z'
 CURRENT = ContextVar('codex_ops_cost_context', default=(None, None, None))
 WRITE_FAILURES = 0
 FAILURE_LOCK = threading.Lock()
+WRITE_LOCK = threading.Lock()
 OPERATIONS = frozenset(('investigate', 'evidence', 'working_set', 'working_set.save', 'verify', 'locate', 'diagnose',
                        'documents', 'incremental', 'sdk', 'read', 'grep', 'glob', 'stat', 'diff',
                        'inspect', 'read_table', 'read_docx', 'read_pdf', 'search', 'compound_search'))
@@ -68,7 +69,8 @@ def record(kind, operation, outcome='observed', evidence='unknown', reused=False
         chat, workspace, task = CURRENT.get()
         row = (time.time() if now is None else now, VERSION, _origin(origin), chat, workspace, task,
                kind, operation if operation in OPERATIONS else 'unknown', outcome, evidence, int(bool(reused)))
-        _persist(_path(root), row)
+        with WRITE_LOCK:
+            _persist(_path(root), row)
         return True
     except (OSError, sqlite3.Error, TypeError, ValueError):
         _write_failed()

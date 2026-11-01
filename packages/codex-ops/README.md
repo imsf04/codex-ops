@@ -81,7 +81,9 @@ See [mutation contracts](skills/compact-output/references/mutations.md).
 ## Automatic presentation and context evidence
 
 When `ops_stats.runtimeBridge.activeForThisProcess` is true, ordinary `text(raw)`
-and `notify(raw)` use the version-tested Windows bridge. Internal JavaScript values
+and `notify(raw)` use the version-tested bridge on Windows, Linux and macOS when the optional
+launcher is configured; see [portable installation](docs/portable-package.md) for host/proxy limits.
+Internal JavaScript values
 stay complete; explicit capture remains available without the bridge.
 
 General thresholds remain 2 KiB for structured JSON/shell and 8 KiB for plain

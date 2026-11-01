@@ -1,17 +1,37 @@
 import importlib.util
 import json
+import os
 from pathlib import Path
 import tempfile
+import sys
 import unittest
 from unittest.mock import patch
 
 ENTRY = Path(__file__).resolve().parents[1] / 'runtime_bridge/control.py'
-spec = importlib.util.spec_from_file_location('runtime_control', ENTRY)
-control = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(control)
+if os.name == 'nt':
+    spec = importlib.util.spec_from_file_location('runtime_control', ENTRY)
+    control = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(control)
 
 
+@unittest.skipUnless(os.name == 'nt', 'Windows registry and Desktop control')
 class ControlTests(unittest.TestCase):
+    def setUp(self):
+        python = patch.dict(os.environ, {'CODEX_OPS_BRIDGE_PYTHON': sys.executable})
+        python.start()
+        self.addCleanup(python.stop)
+
+    def test_runtime_settings_accept_explicit_installed_python(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            python = root / 'python.exe'
+            native = root / 'native.exe'
+            python.write_bytes(b'python')
+            native.write_bytes(b'native')
+            with patch.dict(os.environ, {'CODEX_OPS_BRIDGE_PYTHON': str(python)}), \
+                    patch.object(control, '_native_cli', return_value=native):
+                self.assertEqual(control._runtime_settings()['bridge-python.txt'], str(python))
+
     def test_immutable_bundle_and_enable_verify_payload(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -347,9 +347,15 @@ task_engine.apply(json.loads(Path(sys.argv[1]).read_text()))
     def test_parent_handle_prevents_rename_and_failure_does_not_create_target(self):
         folder = self.root / 'stable'
         folder.mkdir()
-        with task_directories._hold(folder):
-            with self.assertRaises(OSError):
+        with task_directories._hold(folder) as descriptor:
+            if os.name == 'nt':
+                with self.assertRaises(OSError):
+                    folder.rename(self.root / 'renamed')
+            else:
+                identity = os.fstat(descriptor)
                 folder.rename(self.root / 'renamed')
+                self.assertEqual(os.fstat(descriptor).st_ino, identity.st_ino)
+                (self.root / 'renamed').rename(folder)
         with self.assertRaises(OSError):
             with task_directories._hold(self.root / 'absent'):
                 self.fail('Expected open failure')

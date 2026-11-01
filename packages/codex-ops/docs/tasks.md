@@ -78,3 +78,15 @@ Dashboard summaries include both journal types under the same byte and entry lim
 They expose phases and counts, not a fresh verification of file postconditions.
 Use native `status` for current postcondition checks. Explicit root/task IDs identify
 workspace journals; they do not provide separate per-chat filesystem authorization.
+
+## Directory authority by platform
+
+Windows holds parent handles that exclude rename and reparse replacement during each directory
+primitive. Linux and macOS use opened-directory identity authorization: each ancestor is opened
+relative to the preceding descriptor with `O_DIRECTORY | O_NOFOLLOW`; `mkdir` and `rmdir` operate
+relative to the held parent. A concurrent rename may relocate the authorized directory, including
+outside its original pathname. The operation still affects that directory identity; a symlink
+installed at the old pathname cannot redirect it. This is the approved POSIX contract, not a promise
+to prevent other processes from renaming directories. Final-component symlinks are never followed.
+Task frontier/revision checks still apply. If path changes prevent subsequent observation or
+recovery, inspect the journals and actual locations; an error does not imply that no effects occurred.

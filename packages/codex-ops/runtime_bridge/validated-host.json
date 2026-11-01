@@ -1,7 +1,11 @@
 {
   "schema": "codex.code_mode.v1 native transport",
-  "version": "codex-cli 0.165.0-alpha.1.2",
+  "version": "codex-cli 0.165.0-alpha.1; Windows Desktop 0.165.0-alpha.1.2",
   "sha256": [
-    "510687c53c57f52dbf105b8b0050f595d255ab6dafc968c00940c782aa5141c2"
+    "510687c53c57f52dbf105b8b0050f595d255ab6dafc968c00940c782aa5141c2",
+    "77c7baef2b24fa50b3a862635488f84b0bdff593ff81bced28277f90a9d4cfe5",
+    "3ae2eb5cc1d620d640dd9303ee943e8faaa86289f8473a0f0e9cc77e132725dd",
+    "196752c15bf96abd802271e5dda9587ffe5310a80ef7080c4af7615e687388b0",
+    "870ae814d9ded4511e517f786fc3542f7c981e5dd436fc4bb376a4ad22eed144"
   ]
 }

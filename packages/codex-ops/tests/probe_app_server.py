@@ -24,6 +24,7 @@ import tomllib
 import grpc
 from native_cli import native_cli, mcp_python
 from coverage_entry import instrument
+from bridge_probe_status import wait_for_status
 
 
 def free_port():
@@ -76,20 +77,30 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--case', choices=['text', 'error', 'yield', 'mcp', 'media', 'tool_error', 'shell', 'runtime_status', 'progress', 'retrieval', 'grouped', 'native_scope', 'workflow_native', 'workflow_delivery', 'v070', 'v080'], default='text')
     parser.add_argument('--compress', action='store_true')
+    parser.add_argument('--require-pass', action='store_true', help='Fail unless the text projection probe succeeds')
     parser.add_argument('--shim', action='store_true')
+    parser.add_argument('--allow-unvalidated-shim', action='store_true')
     parser.add_argument('--shim-path', type=Path)
     parser.add_argument('--production-status', action='store_true')
     parser.add_argument('--coverage', action='store_true', help='Use instrumented test-only Python entrypoints')
     parser.add_argument('--sandbox-workspace', type=Path)
     parser.add_argument('--shared-home', type=Path, help='Use existing official sandbox state; configure this process without writing its config or auth')
+    parser.add_argument('--installed-home', type=Path, help='Exercise and approve installed hooks in an isolated test home')
+    parser.add_argument('--fixture-python', type=Path, help='Python interpreter for isolated MCP fixture')
+    parser.add_argument('--plugin-root', type=Path, help='Relocated plugin source for runtime acceptance')
     args = parser.parse_args()
+    if args.installed_home:
+        args.installed_home = args.installed_home.resolve()
+        temp_root = Path(tempfile.gettempdir()).resolve()
+        if args.installed_home == temp_root or not args.installed_home.is_relative_to(temp_root):
+            parser.error('--installed-home must be an isolated directory inside the system temporary directory')
     requested_workspace = args.sandbox_workspace
     if args.sandbox_workspace:
         args.sandbox_workspace.mkdir(parents=True, exist_ok=True)
         args.sandbox_workspace = args.sandbox_workspace.resolve()
     root = Path(tempfile.mkdtemp(prefix='codex-ops-appserver-')).resolve()
-    home = args.shared_home or (args.sandbox_workspace or root) / 'home'
-    if args.shared_home:
+    home = args.installed_home or args.shared_home or (args.sandbox_workspace or root) / 'home'
+    if args.shared_home or args.installed_home:
         assert home.is_absolute() and home.is_dir(), 'Shared home must be an existing absolute directory'
     else:
         home.mkdir(exist_ok=True)
@@ -197,9 +208,10 @@ def main():
     model = http.server.ThreadingHTTPServer(('127.0.0.1', 0), Model)
     threading.Thread(target=model.serve_forever, daemon=True).start()
     native_port = free_port()
-    native_exe = Path(native_cli()).with_name('codex-code-mode-host.exe')
+    native_exe = Path(native_cli()).with_name('codex-code-mode-host' + ('.exe' if os.name == 'nt' else ''))
     native = subprocess.Popen([str(native_exe), '--listen', f'grpc://127.0.0.1:{native_port}'],
-                              stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, creationflags=subprocess.CREATE_NO_WINDOW)
+                              stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                              creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
     upstream = grpc.insecure_channel(f'127.0.0.1:{native_port}', options=[('grpc.max_receive_message_length', 67108864), ('grpc.max_send_message_length', 67108864)])
     grpc.channel_ready_future(upstream).result(timeout=8)
 
@@ -232,18 +244,18 @@ shell_snapshot = false
         config = config.replace('sandbox_mode = "read-only"', 'sandbox_mode = "workspace-write"')
         config += '\n[windows]\nsandbox = "elevated"\n'
     if args.case == 'mcp':
-        python = mcp_python()
+        python = args.fixture_python or mcp_python()
         fixture = Path(__file__).with_name('probe_mcp.py').resolve()
         config += f"\n[mcp_servers.probe]\ncommand = '{python}'\nargs = ['-u','{fixture}']\nrequired = true\n"
     if args.case in ('runtime_status', 'retrieval', 'native_scope', 'workflow_native', 'workflow_delivery', 'v070', 'v080'):
-        python = mcp_python()
-        entry = Path(__file__).resolve().parents[1] / 'server.py'
+        python = args.fixture_python or mcp_python()
+        entry = (args.plugin_root or Path(__file__).resolve().parents[1]) / 'server.py'
         if args.coverage:
             python, entry = Path(sys.executable), instrument(root, entry)
         config += f"\n[mcp_servers.codex_ops]\ncommand = '{python}'\nargs = ['-u','{entry}']\nrequired = true\n"
         config += f"[mcp_servers.codex_ops.env]\nCODEX_OPS_BRIDGE_STATUS = '{status_root}'\n"
         config += f"CODEX_OPS_STORE = '{store_root}'\n"
-    if not args.shared_home:
+    if not args.shared_home and not args.installed_home:
         (home / 'config.toml').write_text(config, encoding='utf-8')
     command = [native_cli(), 'app-server', '--stdio', '--code-mode-host', f'http://127.0.0.1:{port}']
     environment = {**os.environ, 'CODEX_HOME': str(home)}
@@ -266,12 +278,16 @@ shell_snapshot = false
         environment.pop('CODEX_WINDOWS_SANDBOX_PACKAGE_FAMILY', None)  # Actual Desktop override behavior.
     if args.shared_home:
         shared_config(command, environment, home, config)
+    elif args.installed_home:
+        settings = tomllib.loads(config.replace('plugins = false', 'plugins = true'))
+        command[1:1] = [arg for entry in config_entries(settings) for arg in ('-c', entry)]
     elif args.sandbox_workspace:
         from native_probe_settings import apply
         apply(command, environment, config)
     process = subprocess.Popen(command,
                                env=environment, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                               stderr=(root / 'appserver-stderr.txt').open('wb'), text=True, encoding='utf-8', creationflags=subprocess.CREATE_NO_WINDOW)
+                               stderr=(root / 'appserver-stderr.txt').open('wb'), text=True, encoding='utf-8',
+                               creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
     inbox = queue.Queue()
     def read():
         for line in process.stdout:
@@ -293,6 +309,17 @@ shell_snapshot = false
     try:
         request(1, 'initialize', {'clientInfo': {'name': 'code-mode-bridge-probe', 'version': '0.1'}, 'capabilities': {'experimentalApi': True}})
         send({'method': 'initialized'})
+        if args.installed_home:
+            listing = request(10, 'hooks/list', {'cwds': [str(root)]})
+            hooks = [hook for entry in listing['data'] for hook in entry['hooks']
+                     if hook['source'] == 'plugin' and hook.get('pluginId', '').startswith('codex-ops@')]
+            assert any(hook['eventName'] == 'sessionStart' for hook in hooks), listing
+            trust = {hook['key']: {'trusted_hash': hook['currentHash']} for hook in hooks}
+            request(11, 'config/batchWrite', {'edits': [{'keyPath': 'hooks.state', 'value': trust,
+                                                         'mergeStrategy': 'upsert'}]})
+            updated = request(12, 'hooks/list', {'cwds': [str(root)]})
+            reviewed = [hook for entry in updated['data'] for hook in entry['hooks'] if hook['key'] in trust]
+            assert len(reviewed) == len(trust) and all(hook['trustStatus'] == 'trusted' for hook in reviewed), updated
         thread = request(2, 'thread/start', {'cwd': str(args.sandbox_workspace or root), 'ephemeral': True})
         request(3, 'turn/start', {'threadId': thread['thread']['id'], 'input': [{'type': 'text', 'text': 'Run the deterministic local protocol fixture.'}]})
         deadline = time.monotonic() + 45
@@ -307,15 +334,9 @@ shell_snapshot = false
         if args.shim:
             if args.coverage:
                 time.sleep(0.3)  # Flush a coverage snapshot before Windows Job teardown.
-            deadline = time.monotonic() + 4
-            while time.monotonic() < deadline:
-                statuses = list(status_root.glob(f'{process.pid}.json'))
-                if statuses:
-                    bridge_status = json.loads(statuses[0].read_text())
-                    if bridge_status['counters']['outboundFrames'] >= 4:
-                        break
-                time.sleep(0.1)
-            assert bridge_status and bridge_status['compressionEnabled'], bridge_status
+            bridge_status = wait_for_status(status_root / f'{process.pid}.json',
+                                           projected=args.compress and args.case in ('text', 'yield', 'mcp'))
+            assert bridge_status and bridge_status['compressionEnabled'] != args.allow_unvalidated_shim, bridge_status
             (root / 'shim-bridge-status.json').write_text(json.dumps(bridge_status, indent=2), encoding='utf-8')
     finally:
         process.terminate()
@@ -386,6 +407,29 @@ shell_snapshot = false
         report['managerPid'] = bridge_status['pid']
     (root / 'report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
     print(json.dumps(report))
+    if args.require_pass:
+        expected = {'text': report['rawIntact'], 'yield': report['rawIntact'], 'mcp': report['rawIntact'],
+                    'error': report['expectedError'], 'media': report['rawIntact'] and report['imagePresent'],
+                    'tool_error': report['rawIntact'] and report['toolErrorPreserved'],
+                    'runtime_status': report['rawIntact']}
+        assert args.case in expected and (args.compress or args.allow_unvalidated_shim), 'Invalid required probe'
+        assert expected[args.case] and not report['rawChanged'], 'Native payload changed or failed'
+        if args.allow_unvalidated_shim:
+            assert args.shim and report['relay']['outboundFrames'] > 0 and report['relay']['compactedFrames'] == 0
+        elif args.shim:
+            assert report['relay']['outboundFrames'] > 0
+            if args.case in ('text', 'yield', 'mcp'):
+                assert report['relay']['compactedFrames'] > 0
+        else:
+            assert report['inboundUnchanged'], 'Inbound payload changed'
+            assert report['frames'], 'No native frames observed'
+            if args.case in ('text', 'yield', 'mcp'):
+                assert report['relay']['compactedFrames'] > 0, 'No projected output observed'
+        if args.installed_home:
+            completed = [event['params']['run'] for event in events if event.get('method') == 'hook/completed']
+            assert any(run['eventName'] == 'sessionStart' and run['source'] == 'plugin' and
+                       run['status'] == 'completed' for run in completed), completed
+            print('Installed plugin hook trusted and executed in the isolated Codex home')
 
 
 if __name__ == '__main__':

@@ -16,7 +16,8 @@ def invoke(root, tool, args, internal=False):
                 'budget': {'timeoutMs': 30000, 'maxBytes': 131072},
                 'request': {'root': str(root), 'scope': 'codex-ops-native-mutations', 'read_only': False,
                             'write_roots': [str(root)], 'deny_credential_names': True, 'tool': tool, 'args': args}}
-    worker = Path(__file__).resolve().parents[1] / 'bin/dsh-ops-worker.exe'
+    name = 'dsh-ops-worker.exe' if os.name == 'nt' else 'dsh-ops-worker'
+    worker = Path(__file__).resolve().parents[1] / 'bin' / name
     run = subprocess.run([str(worker)], input=json.dumps(envelope).encode('utf-8'), capture_output=True,
                          timeout=32, creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
     require(run.returncode == 0, 'Native worker failed; inspect journal postconditions')
