@@ -121,6 +121,12 @@ def main(output, archive=None):
             asyncio.run(verify(cached, workspace, env))
             probe_env = {key: value for key, value in host_env.items()
                          if key.lower() not in ('http_proxy', 'https_proxy', 'all_proxy')}
+            # The host also starts a background curated-marketplace clone. Keep this
+            # isolated test offline so that child cannot outlive the temporary home.
+            probe_env.update({'GIT_CONFIG_COUNT': '1',
+                              'GIT_CONFIG_KEY_0': 'url.http://127.0.0.1:1/.insteadOf',
+                              'GIT_CONFIG_VALUE_0': 'https://github.com/openai/plugins.git',
+                              'GIT_TERMINAL_PROMPT': '0'})
             subprocess.run([sys.executable, str(ROOT / 'tests/probe_app_server.py'),
                             '--case', 'text', '--compress', '--require-pass', '--installed-home', str(home)],
                            cwd=ROOT, env=probe_env, check=True, timeout=90)

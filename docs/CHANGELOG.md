@@ -15,6 +15,8 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - 新增可重定位的安装预览包，在安装时绑定本机 MCP 和 hook 命令。
 - Reject unsupported POSIX directory tasks before any staged task effects occur.
 - 在执行任何分阶段任务操作前拒绝 POSIX 上尚不支持的目录任务。
+- Serialize in-process event writes so parallel worker starts are not lost to local SQLite contention.
+- 串行化同一进程内的事件写入，避免并行工作进程启动计数因 SQLite 竞争而丢失。
 
 - Remove the unused one-shot desktop restart helper and obsolete internal helpers.
 - 移除未使用的一次性桌面重启助手及过时的内部辅助函数。

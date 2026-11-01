@@ -1,9 +1,13 @@
 import json
+from concurrent.futures import ThreadPoolExecutor
 import os
 from pathlib import Path
 import sqlite3
 import tempfile
+import threading
+import time
 import unittest
+from unittest.mock import patch
 
 import cost_events
 import observation_metrics
@@ -16,6 +20,32 @@ CHAT = 'chat:11111111-1111-1111-1111-111111111111'
 
 
 class CostEventTests(unittest.TestCase):
+    def test_parallel_workers_record_both_events_under_database_contention(self):
+        started = threading.Event()
+        real_connect = sqlite3.connect
+
+        class SlowConnection(sqlite3.Connection):
+            def execute(self, sql, *args):
+                if sql.startswith('INSERT INTO task_events'):
+                    super().execute('BEGIN IMMEDIATE')
+                    if not started.is_set():
+                        started.set()
+                        time.sleep(0.25)
+                return super().execute(sql, *args)
+
+        def connect(*args, **kwargs):
+            return real_connect(*args, **kwargs, factory=SlowConnection)
+
+        with tempfile.TemporaryDirectory() as directory:
+            with patch.object(cost_events.sqlite3, 'connect', side_effect=connect):
+                with ThreadPoolExecutor(max_workers=2) as pool:
+                    first = pool.submit(cost_events.worker, 'read', root=directory, origin='validation')
+                    self.assertTrue(started.wait(5))
+                    second = pool.submit(cost_events.worker, 'grep', root=directory, origin='validation')
+                    self.assertTrue(first.result(timeout=5))
+                    self.assertTrue(second.result(timeout=5))
+            self.assertEqual(cost_events.snapshot(None, directory, origin='validation')['workerStarts'], 2)
+
     def test_actual_starts_are_separate_from_workflows_and_cohorts(self):
         with tempfile.TemporaryDirectory() as directory:
             with cost_events.scope(CHAT, 'C:/example', 'task-1'):
