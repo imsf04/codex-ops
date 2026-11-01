@@ -83,14 +83,20 @@ def main():
     parser.add_argument('--coverage', action='store_true', help='Use instrumented test-only Python entrypoints')
     parser.add_argument('--sandbox-workspace', type=Path)
     parser.add_argument('--shared-home', type=Path, help='Use existing official sandbox state; configure this process without writing its config or auth')
+    parser.add_argument('--installed-home', type=Path, help='Exercise and approve installed hooks in an isolated test home')
     args = parser.parse_args()
+    if args.installed_home:
+        args.installed_home = args.installed_home.resolve()
+        temp_root = Path(tempfile.gettempdir()).resolve()
+        if args.installed_home == temp_root or not args.installed_home.is_relative_to(temp_root):
+            parser.error('--installed-home must be an isolated directory inside the system temporary directory')
     requested_workspace = args.sandbox_workspace
     if args.sandbox_workspace:
         args.sandbox_workspace.mkdir(parents=True, exist_ok=True)
         args.sandbox_workspace = args.sandbox_workspace.resolve()
     root = Path(tempfile.mkdtemp(prefix='codex-ops-appserver-')).resolve()
-    home = args.shared_home or (args.sandbox_workspace or root) / 'home'
-    if args.shared_home:
+    home = args.installed_home or args.shared_home or (args.sandbox_workspace or root) / 'home'
+    if args.shared_home or args.installed_home:
         assert home.is_absolute() and home.is_dir(), 'Shared home must be an existing absolute directory'
     else:
         home.mkdir(exist_ok=True)
@@ -245,7 +251,7 @@ shell_snapshot = false
         config += f"\n[mcp_servers.codex_ops]\ncommand = '{python}'\nargs = ['-u','{entry}']\nrequired = true\n"
         config += f"[mcp_servers.codex_ops.env]\nCODEX_OPS_BRIDGE_STATUS = '{status_root}'\n"
         config += f"CODEX_OPS_STORE = '{store_root}'\n"
-    if not args.shared_home:
+    if not args.shared_home and not args.installed_home:
         (home / 'config.toml').write_text(config, encoding='utf-8')
     command = [native_cli(), 'app-server', '--stdio', '--code-mode-host', f'http://127.0.0.1:{port}']
     environment = {**os.environ, 'CODEX_HOME': str(home)}
@@ -268,6 +274,9 @@ shell_snapshot = false
         environment.pop('CODEX_WINDOWS_SANDBOX_PACKAGE_FAMILY', None)  # Actual Desktop override behavior.
     if args.shared_home:
         shared_config(command, environment, home, config)
+    elif args.installed_home:
+        settings = tomllib.loads(config.replace('plugins = false', 'plugins = true'))
+        command[1:1] = [arg for entry in config_entries(settings) for arg in ('-c', entry)]
     elif args.sandbox_workspace:
         from native_probe_settings import apply
         apply(command, environment, config)
@@ -296,6 +305,17 @@ shell_snapshot = false
     try:
         request(1, 'initialize', {'clientInfo': {'name': 'code-mode-bridge-probe', 'version': '0.1'}, 'capabilities': {'experimentalApi': True}})
         send({'method': 'initialized'})
+        if args.installed_home:
+            listing = request(10, 'hooks/list', {'cwds': [str(root)]})
+            hooks = [hook for entry in listing['data'] for hook in entry['hooks']
+                     if hook['source'] == 'plugin' and hook.get('pluginId', '').startswith('codex-ops@')]
+            assert any(hook['eventName'] == 'sessionStart' for hook in hooks), listing
+            trust = {hook['key']: {'trusted_hash': hook['currentHash']} for hook in hooks}
+            request(11, 'config/batchWrite', {'edits': [{'keyPath': 'hooks.state', 'value': trust,
+                                                         'mergeStrategy': 'upsert'}]})
+            updated = request(12, 'hooks/list', {'cwds': [str(root)]})
+            reviewed = [hook for entry in updated['data'] for hook in entry['hooks'] if hook['key'] in trust]
+            assert len(reviewed) == len(trust) and all(hook['trustStatus'] == 'trusted' for hook in reviewed), updated
         thread = request(2, 'thread/start', {'cwd': str(args.sandbox_workspace or root), 'ephemeral': True})
         request(3, 'turn/start', {'threadId': thread['thread']['id'], 'input': [{'type': 'text', 'text': 'Run the deterministic local protocol fixture.'}]})
         deadline = time.monotonic() + 45
@@ -393,6 +413,11 @@ shell_snapshot = false
         assert args.case == 'text' and args.compress, 'Required probe expects compressed text case'
         assert report['rawIntact'] and report['inboundUnchanged'], 'Native payload changed or failed'
         assert report['frames'] and report['relay']['compactedFrames'] > 0, 'No projected output observed'
+        if args.installed_home:
+            completed = [event['params']['run'] for event in events if event.get('method') == 'hook/completed']
+            assert any(run['eventName'] == 'sessionStart' and run['source'] == 'plugin' and
+                       run['status'] == 'completed' for run in completed), completed
+            print('Installed plugin hook trusted and executed in the isolated Codex home')
 
 
 if __name__ == '__main__':
