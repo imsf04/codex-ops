@@ -2,6 +2,8 @@
 
 [English](README.en.md) · **中文**
 
+当前 Codex Ops 项目的唯一维护者：[imsf04](https://github.com/imsf04)。
+
 为 Codex 提供紧凑证据读取、可恢复的大输出、文件与文档工具，以及分阶段文件任务的 MCP 插件。
 Python 服务、原生 Rust worker、专用 Rust 内核和可选输出桥接共同组成插件。
 
