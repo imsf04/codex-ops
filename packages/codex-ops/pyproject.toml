@@ -10,7 +10,7 @@ dev = ["coverage==7.16.2", "radon==6.0.1", "lizard==1.17.31", "grpcio-reflection
 [tool.uv]
 package = false
 exclude-newer = "2026-10-21T00:00:00Z"
-environments = ["sys_platform == 'win32'"]
+environments = ["sys_platform == 'win32'", "sys_platform == 'linux'", "sys_platform == 'darwin'"]
 constraint-dependencies = [
   "annotated-types==0.8.0",
   "anyio==4.15.1",
