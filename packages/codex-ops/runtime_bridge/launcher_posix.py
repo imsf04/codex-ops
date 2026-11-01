@@ -46,7 +46,11 @@ def _explicit_host(arguments, index):
 
 
 def _exited(pid):
-    return os.waitid(os.P_PID, pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+    status = os.waitid(os.P_PID, pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+    if status is not None and status.si_code == os.CLD_STOPPED:
+        os.waitid(os.P_PID, pid, os.WSTOPPED | os.WNOHANG)
+        return None
+    return status
 
 
 def _stop_group(process, signum):
@@ -54,6 +58,10 @@ def _stop_group(process, signum):
         os.killpg(process.pid, signum)
     except ProcessLookupError:
         pass
+    except PermissionError:
+        # macOS can report EPERM when the group contains only an exited leader.
+        if _exited(process.pid) is None:
+            raise
 
 
 def _ready(process, heartbeat):
@@ -80,8 +88,29 @@ def _ready(process, heartbeat):
     raise RuntimeError('Bridge did not return a valid loopback address')
 
 
+def _cleanup(processes):
+    failures = []
+    for signum in (signal.SIGTERM, signal.SIGKILL):
+        if signum == signal.SIGKILL and processes:
+            time.sleep(.2)
+        for process in processes:
+            try:
+                _stop_group(process, signum)
+            except OSError as error:
+                failures.append(str(error))
+    for process in processes:
+        try:
+            process.wait(timeout=5)
+        except (OSError, subprocess.TimeoutExpired) as error:
+            failures.append(str(error))
+        if process.stdout:
+            process.stdout.close()
+    return failures
+
+
 def _supervise(cli, manager_path, arguments, index, heartbeat, result, launcher_pid):
     processes = []
+    code = 1
     try:
         for signum in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
             signal.signal(signum, lambda *_: None)
@@ -120,24 +149,18 @@ def _supervise(cli, manager_path, arguments, index, heartbeat, result, launcher_
             status = _exited(server.pid)
             if status is not None:
                 code = status.si_status if status.si_code == os.CLD_EXITED else 128 + status.si_status
-                os.write(result, str(code).encode('ascii'))
                 break
     except (OSError, ValueError) as error:
         print(f'codex-ops: {error}', file=sys.stderr)
+    finally:
+        failures = _cleanup(processes)
+        if failures:
+            print('codex-ops: process cleanup failed: ' + '; '.join(failures), file=sys.stderr)
+            code = 1
         try:
-            os.write(result, b'1')
+            os.write(result, str(code).encode('ascii'))
         except BrokenPipeError:
             pass
-    finally:
-        for process in processes:
-            _stop_group(process, signal.SIGTERM)
-        if processes:
-            time.sleep(.2)
-        for process in processes:
-            _stop_group(process, signal.SIGKILL)
-            process.wait()
-            if process.stdout:
-                process.stdout.close()
         os.close(heartbeat)
         os.close(result)
 

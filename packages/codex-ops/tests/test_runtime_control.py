@@ -7,11 +7,13 @@ import unittest
 from unittest.mock import patch
 
 ENTRY = Path(__file__).resolve().parents[1] / 'runtime_bridge/control.py'
-spec = importlib.util.spec_from_file_location('runtime_control', ENTRY)
-control = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(control)
+if os.name == 'nt':
+    spec = importlib.util.spec_from_file_location('runtime_control', ENTRY)
+    control = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(control)
 
 
+@unittest.skipUnless(os.name == 'nt', 'Windows registry and Desktop control')
 class ControlTests(unittest.TestCase):
     def test_runtime_settings_accept_explicit_installed_python(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -80,6 +80,8 @@ jobs:
       - name: Check POSIX launcher lifecycle
         if: runner.os != 'Windows'
         run: uv run --locked --no-dev python -m unittest discover -s tests -p test_posix_launcher.py
+      - name: Check bridge manager lifecycle
+        run: uv run --locked --no-dev python -m unittest discover -v -s tests -p test_lifecycle_architecture.py
       - name: Check hook behavior
         run: uv run --locked --no-dev python -m unittest discover -s tests -p test_hook_architecture.py
       - name: Check read-only snapshot safety

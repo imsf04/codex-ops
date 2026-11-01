@@ -111,20 +111,22 @@ def main(output, archive=None):
             owned_process.run([sys.executable, '-m', 'unittest', 'discover', '-s', str(ROOT / 'tests'),
                                '-p', 'test_v06_workflow_sdk.py'], cwd=ROOT, env=host_env, check=True)
             if os.name != 'nt':
-                verify_relay(relocated / 'plugin', host, root, env)
                 shim_env = {key: value for key, value in host_env.items()
                             if key.lower() not in ('http_proxy', 'https_proxy', 'all_proxy')}
                 shim_env['CODEX_OPS_REAL_CLI'] = str(codex)
-                owned_process.run([sys.executable, str(ROOT / 'tests/probe_app_server.py'),
-                                   '--case', 'text', '--shim', '--allow-unvalidated-shim', '--require-pass',
-                                   '--shim-path', str(relocated / 'plugin/bin/codex-ops-cli')],
-                                  cwd=ROOT, env=shim_env, check=True, timeout=90)
                 manifest = relocated / 'plugin/runtime_bridge/validated-host.json'
                 original = manifest.read_bytes()
                 try:
                     allowlist = json.loads(original)
                     digest = hashlib.sha256(host.read_bytes()).hexdigest()
-                    allowlist['sha256'].append(digest)
+                    manifest.write_text(json.dumps({**allowlist, 'sha256': []}), encoding='utf-8')
+                    verify_relay(relocated / 'plugin', host, root, env)
+                    owned_process.run([sys.executable, str(ROOT / 'tests/probe_app_server.py'),
+                                       '--case', 'text', '--shim', '--allow-unvalidated-shim', '--require-pass',
+                                       '--shim-path', str(relocated / 'plugin/bin/codex-ops-cli')],
+                                      cwd=ROOT, env=shim_env, check=True, timeout=90)
+                    if digest not in allowlist['sha256']:
+                        allowlist['sha256'].append(digest)
                     manifest.write_text(json.dumps(allowlist), encoding='utf-8')
                     for case in ('text', 'yield', 'error', 'media', 'tool_error', 'mcp'):
                         owned_process.run([sys.executable, str(ROOT / 'tests/probe_app_server.py'),

@@ -2,11 +2,14 @@ import json
 import os
 from pathlib import Path
 import shlex
+import signal
 import subprocess
 import sys
 import tempfile
 import time
+from types import SimpleNamespace
 import unittest
+from unittest.mock import Mock, patch
 
 if os.name == 'nt':
     raise unittest.SkipTest('POSIX launcher is not used on Windows')
@@ -109,6 +112,22 @@ class PosixLauncherTests(unittest.TestCase):
         with self.assertRaises(ProcessLookupError):
             os.kill(manager, 0)
 
+    def test_stopped_server_is_not_mistaken_for_exit(self):
+        process = subprocess.Popen(self.command('app-server', '--stdio'),
+                                   env={**self.env, 'CLI_SLEEP': '1'})
+        try:
+            self.wait_for(self.root / 'cli.json')
+            cli = json.loads((self.root / 'cli.json').read_text())['pid']
+            os.kill(cli, signal.SIGSTOP)
+            time.sleep(.2)
+            self.assertIsNone(process.poll())
+            os.kill(cli, signal.SIGCONT)
+            self.assertEqual(process.wait(timeout=5), 0)
+        finally:
+            if process.poll() is None:
+                process.kill()
+                process.wait()
+
     def test_http_proxy_preserves_native_execution_without_injection(self):
         result = subprocess.run(self.command('app-server', '--stdio'),
                                 env={**self.env, 'HTTP_PROXY': 'http://127.0.0.1:1', 'CODEX_OPS_AUTO_OUTPUT': '1'},
@@ -127,6 +146,27 @@ class PosixLauncherTests(unittest.TestCase):
         self.assertEqual(state['args'], ['app-server', '--stdio'])
         self.assertIsNone(state['env'])
         self.assertIn('using native output', result.stderr)
+
+    def test_permission_error_is_ignored_only_for_an_exited_leader(self):
+        process = SimpleNamespace(pid=123)
+        with patch.object(launcher_posix.os, 'killpg', side_effect=PermissionError), \
+                patch.object(launcher_posix, '_exited', return_value=object()):
+            launcher_posix._stop_group(process, signal.SIGTERM)
+        with patch.object(launcher_posix.os, 'killpg', side_effect=PermissionError), \
+                patch.object(launcher_posix, '_exited', return_value=None):
+            with self.assertRaises(PermissionError):
+                launcher_posix._stop_group(process, signal.SIGTERM)
+
+    def test_cleanup_continues_after_one_group_cannot_be_signalled(self):
+        first = SimpleNamespace(pid=11, wait=Mock(), stdout=None)
+        second = SimpleNamespace(pid=22, wait=Mock(), stdout=None)
+        with patch.object(launcher_posix, '_stop_group', side_effect=[PermissionError('blocked'), None, None, None]) as stop, \
+                patch.object(launcher_posix.time, 'sleep'):
+            failures = launcher_posix._cleanup([first, second])
+        self.assertEqual(stop.call_count, 4)
+        first.wait.assert_called_once_with(timeout=5)
+        second.wait.assert_called_once_with(timeout=5)
+        self.assertEqual(failures, ['blocked'])
 
 
 if __name__ == '__main__':
