@@ -1,4 +1,5 @@
 """Cooperative staged tasks; native permissions remain the execution boundary."""
+import os
 import subprocess
 from . import journal, task_execution as execution, task_journal as tasks
 from .paths import require, root_path
@@ -63,6 +64,8 @@ def _run(root, folder, identity, action, clear=False):
 def apply(value, started=None):
     root = validate(value)
     require(prepare(root, value['stages'], value['owner']) == value, 'Task source or plan changed before execution')
+    require(os.name == 'nt' or not any(step['operation'] in ('mkdir', 'rmdir') for step in value['steps']),
+            'Secure directory task operations are not yet available on this platform')
     folder, record = tasks.create(value)
     if started:
         started({'status': 'started', 'taskId': record['id'], 'root': str(root), 'effectState': 'none'})

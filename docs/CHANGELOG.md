@@ -13,6 +13,8 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - 支持在非 Windows 系统启动 MCP 服务；自动输出桥接和目录任务操作在这些系统上仍不可用。
 - Add a relocatable installation preview with locally bound MCP and hook commands.
 - 新增可重定位的安装预览包，在安装时绑定本机 MCP 和 hook 命令。
+- Reject unsupported POSIX directory tasks before any staged task effects occur.
+- 在执行任何分阶段任务操作前拒绝 POSIX 上尚不支持的目录任务。
 
 - Remove the unused one-shot desktop restart helper and obsolete internal helpers.
 - 移除未使用的一次性桌面重启助手及过时的内部辅助函数。

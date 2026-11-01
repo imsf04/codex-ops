@@ -28,4 +28,5 @@ $env:CODEX_OPS_BRIDGE_PYTHON = (Resolve-Path ./plugin/.venv/Scripts/python.exe).
 
 An existing runtime with the same version must not be overwritten; stage reports a mismatch. Check
 the bridge status after restarting Desktop. On Linux and macOS automatic output bridging and staged
-directory creation/removal are not yet available. This preview does not claim complete platform parity.
+directory creation/removal are not yet available. Tasks containing directory steps are rejected before
+any task effects. This preview does not claim complete platform parity.

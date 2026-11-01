@@ -53,6 +53,22 @@ class PortableStartupTests(unittest.TestCase):
                 task_directories.execute(root, 'child', True)
                 self.assertTrue((root / 'child').is_dir())
 
+    def test_task_preflight_does_not_partially_apply_unsupported_directories(self):
+        import task_api
+        from mutations import task_engine
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            plan = task_api.plan(str(root), [[{'operation': 'write', 'args': {'path': 'a', 'content': 'value'}}],
+                                             [{'operation': 'mkdir', 'args': {'path': 'child'}}]])
+            if os.name == 'nt':
+                self.assertEqual(task_engine.apply(plan)['status'], 'completed')
+                self.assertTrue((root / 'child').is_dir())
+            else:
+                with self.assertRaisesRegex(ValueError, 'Secure directory task operations'):
+                    task_engine.apply(plan)
+                self.assertFalse((root / 'a').exists())
+                self.assertFalse((root / '.codex-ops-tasks').exists())
+
 
 if __name__ == '__main__':
     unittest.main()

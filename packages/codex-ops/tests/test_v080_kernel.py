@@ -19,7 +19,7 @@ import cost_events
 class KernelTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='codex-ops-kernel-test-')
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         (self.root / 'src').mkdir()
         (self.root / 'tests').mkdir()
         (self.root / 'coverage').mkdir()
