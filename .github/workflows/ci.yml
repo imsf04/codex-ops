@@ -2,10 +2,8 @@ name: Cross-platform validation
 on:
   # A merge must validate itself. Without this, a branch was only ever checked when someone
   # remembered to dispatch the workflow by hand — which is how a stale number shipped in #134.
-  # Release branches validate on push exactly like `main`; each 0.4.0 slice lands on its
-  # staging branch before the final release PR.
+  # Validate development branches on push as well as pull requests and main.
   push:
-    branches: [main, 0.3.2, release/0.4.0]
   # Every PR needs evidence, including stacked changes targeting a feature branch.
   # No target-branch or path filter: an omitted run cannot satisfy CI required.
   pull_request:
