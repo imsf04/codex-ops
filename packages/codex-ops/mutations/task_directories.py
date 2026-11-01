@@ -1,6 +1,7 @@
 """Native directory effects with Windows parent rename/reparse exclusion."""
 from contextlib import contextmanager, ExitStack
 import ctypes
+import os
 from ctypes import wintypes
 from .paths import target, _regular_components
 
@@ -26,6 +27,8 @@ def _hold(path):
 
 
 def execute(root, name, create):
+    if os.name != 'nt':
+        raise OSError('Secure directory task operations are not yet available on this platform')
     path = target(root, name)
     with ExitStack() as stack:
         for parent in reversed(path.parents):

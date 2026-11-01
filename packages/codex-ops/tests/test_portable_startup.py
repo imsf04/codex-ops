@@ -41,6 +41,18 @@ class PortableStartupTests(unittest.TestCase):
         else:
             self.assertIsNotNone(doctor.control)
 
+    def test_directory_tasks_never_silently_bypass_platform_boundary(self):
+        from mutations import task_directories
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            if os.name != 'nt':
+                with self.assertRaisesRegex(OSError, 'not yet available'):
+                    task_directories.execute(root, 'child', True)
+                self.assertFalse((root / 'child').exists())
+            else:
+                task_directories.execute(root, 'child', True)
+                self.assertTrue((root / 'child').is_dir())
+
 
 if __name__ == '__main__':
     unittest.main()
