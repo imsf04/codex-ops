@@ -84,7 +84,7 @@ def serve(upstream_address, port=0, on_frame=None, enabled=True):
             initial.close()
         except Exception:
             pass
-    channel = grpc.insecure_channel(upstream_address, options=OPTIONS)
+    channel = grpc.insecure_channel(upstream_address, options=[*OPTIONS, ('grpc.enable_http_proxy', 0)])
     grpc.channel_ready_future(channel).result(timeout=10)
     relay = Relay(channel, on_frame, enabled)
     server = grpc.server(concurrent.futures.ThreadPoolExecutor(max_workers=64), options=OPTIONS)
