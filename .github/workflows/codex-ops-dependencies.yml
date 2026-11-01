@@ -65,6 +65,8 @@ jobs:
         run: rustc --edition 2024 -O runtime_bridge/shim.rs -o bin/codex-ops-cli.exe
       - name: Exercise native worker and kernel
         run: uv run --locked --no-dev python -m unittest discover -s tests -p test_portable_native.py
+      - name: Check native kernel behavior and deadlines
+        run: uv run --locked --no-dev python -m unittest discover -s tests -p test_v080_kernel.py
       - name: Exercise MCP stdio server
         run: uv run --locked --no-dev python -m unittest discover -s tests -p test_portable_startup.py
       - name: Check process ancestry and runtime status

@@ -108,6 +108,11 @@ def main(output, archive=None):
             host_env = {**env, 'PATH': str(root) + os.pathsep + env.get('PATH', '')}
             subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', str(ROOT / 'tests'),
                             '-p', 'test_v06_workflow_sdk.py'], cwd=ROOT, env=host_env, check=True)
+            probe_env = {key: value for key, value in host_env.items()
+                         if key.lower() not in ('http_proxy', 'https_proxy', 'all_proxy')}
+            subprocess.run([sys.executable, str(ROOT / 'tests/probe_app_server.py'),
+                            '--case', 'text', '--compress', '--require-pass'],
+                           cwd=ROOT, env=probe_env, check=True, timeout=90)
             if os.name != 'nt':
                 verify_relay(relocated / 'plugin', host, root, env)
             home = root / 'codex-home'

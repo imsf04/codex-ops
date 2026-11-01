@@ -108,7 +108,8 @@ class KernelTests(unittest.TestCase):
         self.assertEqual(foreign['workerStarts'], 0)
 
     def test_kernel_invalid_json_exit_and_timeout_have_distinct_failures(self):
-        command = Path(os.environ.get('CODEX_OPS_KERNEL', Path(files.__file__).parent / 'bin/codex-ops-kernel.exe'))
+        name = 'codex-ops-kernel.exe' if os.name == 'nt' else 'codex-ops-kernel'
+        command = Path(os.environ.get('CODEX_OPS_KERNEL', Path(files.__file__).parent / 'bin' / name))
         bad = subprocess.run([str(command)], input=b'invalid', capture_output=True, timeout=5)
         self.assertEqual(bad.returncode, 0)
         self.assertEqual(json.loads(bad.stdout)['status'], 'error')
@@ -132,7 +133,8 @@ class KernelTests(unittest.TestCase):
                     'request': {'root': str(self.root), 'scope': 'test', 'read_only': True,
                                 'deny_credential_names': True, 'tool': 'investigate',
                                 'args': investigate_plan.build(str(self.root), query)}}
-        command = Path(os.environ.get('CODEX_OPS_KERNEL', Path(files.__file__).parent / 'bin/codex-ops-kernel.exe'))
+        name = 'codex-ops-kernel.exe' if os.name == 'nt' else 'codex-ops-kernel'
+        command = Path(os.environ.get('CODEX_OPS_KERNEL', Path(files.__file__).parent / 'bin' / name))
         result = subprocess.run([str(command)], input=json.dumps(envelope).encode(), capture_output=True, timeout=5)
         self.assertEqual(result.returncode, 124)
         self.assertEqual(source.stat().st_size, size)

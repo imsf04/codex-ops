@@ -76,6 +76,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--case', choices=['text', 'error', 'yield', 'mcp', 'media', 'tool_error', 'shell', 'runtime_status', 'progress', 'retrieval', 'grouped', 'native_scope', 'workflow_native', 'workflow_delivery', 'v070', 'v080'], default='text')
     parser.add_argument('--compress', action='store_true')
+    parser.add_argument('--require-pass', action='store_true', help='Fail unless the text projection probe succeeds')
     parser.add_argument('--shim', action='store_true')
     parser.add_argument('--shim-path', type=Path)
     parser.add_argument('--production-status', action='store_true')
@@ -197,9 +198,10 @@ def main():
     model = http.server.ThreadingHTTPServer(('127.0.0.1', 0), Model)
     threading.Thread(target=model.serve_forever, daemon=True).start()
     native_port = free_port()
-    native_exe = Path(native_cli()).with_name('codex-code-mode-host.exe')
+    native_exe = Path(native_cli()).with_name('codex-code-mode-host' + ('.exe' if os.name == 'nt' else ''))
     native = subprocess.Popen([str(native_exe), '--listen', f'grpc://127.0.0.1:{native_port}'],
-                              stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, creationflags=subprocess.CREATE_NO_WINDOW)
+                              stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                              creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
     upstream = grpc.insecure_channel(f'127.0.0.1:{native_port}', options=[('grpc.max_receive_message_length', 67108864), ('grpc.max_send_message_length', 67108864)])
     grpc.channel_ready_future(upstream).result(timeout=8)
 
@@ -271,7 +273,8 @@ shell_snapshot = false
         apply(command, environment, config)
     process = subprocess.Popen(command,
                                env=environment, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                               stderr=(root / 'appserver-stderr.txt').open('wb'), text=True, encoding='utf-8', creationflags=subprocess.CREATE_NO_WINDOW)
+                               stderr=(root / 'appserver-stderr.txt').open('wb'), text=True, encoding='utf-8',
+                               creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
     inbox = queue.Queue()
     def read():
         for line in process.stdout:
@@ -386,6 +389,10 @@ shell_snapshot = false
         report['managerPid'] = bridge_status['pid']
     (root / 'report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
     print(json.dumps(report))
+    if args.require_pass:
+        assert args.case == 'text' and args.compress, 'Required probe expects compressed text case'
+        assert report['rawIntact'] and report['inboundUnchanged'], 'Native payload changed or failed'
+        assert report['frames'] and report['relay']['compactedFrames'] > 0, 'No projected output observed'
 
 
 if __name__ == '__main__':
