@@ -126,8 +126,8 @@ def main(output, archive=None):
                                        '--shim-path', str(relocated / 'plugin/bin/codex-ops-cli')],
                                       cwd=ROOT, env=shim_env, check=True, timeout=90)
                     if digest not in allowlist['sha256']:
-                        allowlist['sha256'].append(digest)
-                    manifest.write_text(json.dumps(allowlist), encoding='utf-8')
+                        raise AssertionError(f'Native host SHA-256 is not in the packaged allowlist: {digest}')
+                    manifest.write_bytes(original)
                     for case in ('text', 'yield', 'error', 'media', 'tool_error', 'mcp'):
                         owned_process.run([sys.executable, str(ROOT / 'tests/probe_app_server.py'),
                                            '--case', case, '--shim', '--compress', '--require-pass',
