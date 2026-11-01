@@ -10,7 +10,7 @@ Python 服务、原生 Rust worker、专用 Rust 内核和可选输出桥接共�
 当前版本为 **0.8.0 实验版本**。功能验证与成本指标分别记录；历史成本门槛未全部通过，
 不将功能测试通过解释为已经达到节省 token 的目标。
 
-跨平台安装包仍在 PR #8 验收：Windows x64、Linux x64、macOS ARM64 和 macOS x64。
+跨平台构建与安装验收覆盖 Windows x64、Linux x64、macOS ARM64 和 macOS x64。
 POSIX 目录任务采用目录身份授权；输出桥接的宿主与代理限制见安装指南。
 下载 Actions 的平台预览产物后，按 [安装指南](packages/codex-ops/docs/portable-package.zh-CN.md)
 安装并注册插件；预览包不等同于已发布的稳定版本。

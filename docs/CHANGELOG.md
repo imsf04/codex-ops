@@ -7,6 +7,9 @@ this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+- Include uv's original MIT and Apache-2.0 license texts in portable artifacts.
+- 便携产物附带 uv 原始 MIT 与 Apache-2.0 许可证文本。
+
 - Validate the packaged Windows launcher against the pinned native host; exercise seven bridge scenarios and installed directory task rollback on all four platforms. POSIX diagnostics now report actual attached bridge status.
 - 验证 Windows 打包启动器与固定原生宿主；四平台验收七种桥接场景和安装后的目录任务回滚。POSIX 诊断现按实际桥接状态报告。
 

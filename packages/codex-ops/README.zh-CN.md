@@ -71,7 +71,8 @@ write、edit、精确数量 replace、copy、move、remove 使用版本校验、
 ## 自动呈现与上下文证据
 
 `ops_stats.runtimeBridge.activeForThisProcess` 为 true 时，普通
-`text(raw)`、`notify(raw)` 即可使用经版本验证的 Windows 桥接。JavaScript
+`text(raw)`、`notify(raw)` 在配置可选启动器后可使用经版本验证的 Windows、Linux 和 macOS 桥接。
+宿主与代理限制见[便携安装指南](docs/portable-package.zh-CN.md)。JavaScript
 内部完整值保持原样；未启用桥接时仍可显式 capture。
 
 通用阈值保持为结构化 JSON／shell 2 KiB、普通文字 8 KiB。更小的已完成 shell
